@@ -1,0 +1,23 @@
+
+MACRO(DEFINE_PROCESSOR _target)
+    
+ADD_LIBRARY(${_target} STATIC "")
+
+CONFIGURE_LIBRARY(${_target})
+
+TARGET_LINK_LIBRARIES(
+    ${_target}
+    PUBLIC
+        KiwiCommon
+)
+
+ENDMACRO()
+
+###
+### Processor Libraries
+###
+
+ADD_SUBDIRECTORY(MOS6502)
+ADD_SUBDIRECTORY(SM83)
+
+SET(KIWI_CPU_TARGET_LIST ${KIWI_CPU_TARGET_LIST} PARENT_SCOPE)

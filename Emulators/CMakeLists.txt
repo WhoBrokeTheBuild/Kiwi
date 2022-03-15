@@ -1,0 +1,33 @@
+
+MACRO(DEFINE_EMULATOR _target _prefix)
+    
+    ADD_LIBRARY(${_target} SHARED "")
+
+    CONFIGURE_LIBRARY(${_target})
+
+    TARGET_LINK_LIBRARIES(
+        ${_target}
+        PUBLIC
+            KiwiCommon
+    )
+
+    SET_TARGET_PROPERTIES(
+        ${_target}
+        PROPERTIES
+            DEFINE_SYMBOL "${_prefix}_EXPORT"
+    )
+    
+    LIST(APPEND KIWI_RUNTIME_PATH ${CMAKE_CURRENT_BINARY_DIR})
+    SET(KIWI_RUNTIME_PATH ${KIWI_RUNTIME_PATH} PARENT_SCOPE)
+
+ENDMACRO()
+
+###
+### Emulator Libraries & Targets
+###
+
+ADD_SUBDIRECTORY(GameBoy)
+ADD_SUBDIRECTORY(NES)
+
+SET(KIWI_EMULATOR_TARGET_LIST ${KIWI_EMULATOR_TARGET_LIST} PARENT_SCOPE)
+SET(KIWI_RUNTIME_PATH ${KIWI_RUNTIME_PATH} PARENT_SCOPE)
