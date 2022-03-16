@@ -6,6 +6,10 @@ import argparse
 
 isWindows = (os.name == 'nt')
 
+if os.name == 'posix':
+    import platform
+    isMacOS = (platform.system() == 'Darwin')
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
@@ -102,6 +106,9 @@ else:
         'value': runtimePath
     })
     data['externalConsole'] = False
+
+if isMacOS:
+    data['MIMode'] = 'lldb'
 
 add_or_update_config(data, launch['configurations'])
 
