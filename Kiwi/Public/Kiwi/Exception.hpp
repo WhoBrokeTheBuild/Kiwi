@@ -22,14 +22,7 @@ public:
         : std::runtime_error(fmt::vformat(format, fmt::make_format_args(std::forward<Args>(args)...)))
     { }
 
-
 };
-
-#if defined(KIWI_PLATFORM_WINDOWS)
-
-    using WindowsError = fmt::windows_error;
-
-#endif
 
 } // namespace kiwi
 

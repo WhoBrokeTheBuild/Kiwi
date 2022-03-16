@@ -49,6 +49,8 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ADD_SUBDIRECTORY(ThirdParty)
 
+FIND_PACKAGE(glm CONFIG REQUIRED)
+
 FIND_PACKAGE(fmt 7.0.0 CONFIG REQUIRED)
 
 FIND_PACKAGE(SDL2 2.0.6 CONFIG REQUIRED)
@@ -101,12 +103,16 @@ ADD_SUBDIRECTORY(Tools)
 
 INCLUDE(AddLaunchTarget)
 
-ADD_LAUNCH_TARGET("Kiwi" KiwiGUI)
+ADD_LAUNCH_TARGET(Kiwi Kiwi KiwiGUI)
 
 FOREACH(_target ${KIWI_EMULATOR_TARGET_LIST})
 
+    # Remove leading "Kiwi"
+    STRING(SUBSTRING "${_target}" 4 -1 _name)
+
     ADD_LAUNCH_TARGET(
         ${_target}
+        "Kiwi (${_name})"
         KiwiGUI
         --emulator ${_target}
     )

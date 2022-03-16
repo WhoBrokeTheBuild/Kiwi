@@ -1,5 +1,5 @@
 
-MACRO(DEFINE_EMULATOR _target _prefix)
+MACRO(DEFINE_EMULATOR _target)
     
     ADD_LIBRARY(${_target} SHARED "")
 
@@ -11,12 +11,6 @@ MACRO(DEFINE_EMULATOR _target _prefix)
             Kiwi
     )
 
-    SET_TARGET_PROPERTIES(
-        ${_target}
-        PROPERTIES
-            DEFINE_SYMBOL "${_prefix}_EXPORT"
-    )
-    
     LIST(APPEND KIWI_RUNTIME_PATH ${CMAKE_CURRENT_BINARY_DIR})
     SET(KIWI_RUNTIME_PATH ${KIWI_RUNTIME_PATH} PARENT_SCOPE)
 

@@ -12,6 +12,7 @@ CONFIGURE_LIBRARY(${_target})
 TARGET_LINK_LIBRARIES(
     ${_target}
     PUBLIC
+        glm::glm
         fmt::fmt
 )
 

@@ -1,7 +1,7 @@
 
 SET(_target KiwiGameBoy)
 
-DEFINE_EMULATOR(${_target} "KIWI_GAMEBOY")
+DEFINE_EMULATOR(${_target})
 
 TARGET_LINK_LIBRARIES(
     ${_target}

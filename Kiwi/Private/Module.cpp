@@ -37,7 +37,7 @@ ModuleHandle _dlopen(const String& name)
 
         handle = LoadLibraryA(name.c_str());
         if (!handle) {
-            auto error = WindowsError(GetLastError(), "Failed to load library '{}'", name);
+            auto error = fmt::windows_error(GetLastError(), "Failed to load library '{}'", name);
             Log(KIWI_ANCHOR, "Failed to load library {}, {}", name, error.what());
         }
 

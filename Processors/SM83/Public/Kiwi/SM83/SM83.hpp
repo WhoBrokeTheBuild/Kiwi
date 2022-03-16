@@ -6,8 +6,14 @@
 namespace kiwi {
 namespace SM83 {
 
-struct Registers
+class CPU
 {
+public:
+
+    ///
+    /// Registers
+    ///
+
     union {
         struct {
             union {
@@ -84,21 +90,13 @@ struct Registers
     // Stack Pointer
     uint16_t SP;
 
-}; // struct Registers
-
-static_assert(sizeof(Registers) == 12);
-
-class CPU
-{
-public:
+    
 
     CPU();
     
     virtual ~CPU();
 
 private:
-
-    Registers _registers;
 
 
 }; // class CPU

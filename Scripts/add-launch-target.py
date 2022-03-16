@@ -44,9 +44,6 @@ name       = args.name
 executable = args.executable
 arguments  = args.arguments
 binaryDir  = args.binaryDir
-rootDir    = os.getcwd()
-
-# Replace with OS-specific multiple path separator (';' for PATH, ':' for LD_LIBRARY_PATH)
 runtimePath = args.runtimePath
 
 def add_or_update_config(data, configurations):
@@ -88,7 +85,7 @@ data = {
     'request': 'launch',
     'program': executable,
     'args': arguments,
-    'cwd': rootDir,
+    'cwd': os.getcwd(),
     'environment': []
 }
 
@@ -115,14 +112,11 @@ json.dump(launch, file, indent=4)
 ### Visual Studio
 ###
 
-isWindows = True
 if isWindows:
     if not os.path.isdir('.vs'):
         os.mkdir('.vs')
     
     filename = '.vs/launch.vs.json'
-
-    
 
     launch = {}
     try:
@@ -146,7 +140,7 @@ if isWindows:
             os.path.basename(executable),
             os.path.relpath(executable, binaryDir).replace('/', '\\')
         ),
-        'cwd': rootDir,
+        'cwd': os.getcwd(),
         'env': {
             'PATH': '${env.PATH};' + runtimePath
         },
