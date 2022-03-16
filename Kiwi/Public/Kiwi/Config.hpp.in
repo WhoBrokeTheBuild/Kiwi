@@ -121,32 +121,6 @@
 
 #if KIWI_COMPILER_MSVC
 
-    #define KIWI_API_EXPORT __declspec(dllexport)
-    #define KIWI_API_IMPORT __declspec(dllimport)
-
-#else
-
-    #if KIWI_COMPILER_GCC || KIWI_COMPILER_CLANG
-
-        #define KIWI_API_EXPORT __attribute__ ((__visibility__ ("default")))
-        #define KIWI_API_IMPORT __attribute__ ((__visibility__ ("default")))
-
-    #endif
-
-#endif
-
-#if defined(KIWI_EXPORT)
-
-    #define KIWI_API KIWI_API_EXPORT
-
-#else
-
-    #define KIWI_API KIWI_API_IMPORT
-
-#endif
-
-#if KIWI_COMPILER_MSVC
-
     #define KIWI_FUNCTION_NAME __FUNCSIG__
 
 #elif KIWI_COMPILER_GCC || KIWI_COMPILER_CLANG
@@ -189,5 +163,35 @@
 
 #define _KIWI_STRINGIFY(STR) #STR
 #define KIWI_STRINGIFY(STR) _KIWI_STRINGIFY(STR)
+
+///
+/// Shared Library Configuration
+///
+
+#if KIWI_COMPILER_MSVC
+
+    #define KIWI_API_EXPORT __declspec(dllexport)
+    #define KIWI_API_IMPORT __declspec(dllimport)
+
+#else
+
+    #if KIWI_COMPILER_GCC || KIWI_COMPILER_CLANG
+
+        #define KIWI_API_EXPORT __attribute__ ((__visibility__ ("default")))
+        #define KIWI_API_IMPORT __attribute__ ((__visibility__ ("default")))
+
+    #endif
+
+#endif
+
+#if defined(KIWI_EXPORT)
+
+    #define KIWI_API KIWI_API_EXPORT
+
+#else
+
+    #define KIWI_API KIWI_API_IMPORT
+
+#endif
 
 #endif // KIWI_CONFIG_HPP

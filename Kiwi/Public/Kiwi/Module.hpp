@@ -2,14 +2,15 @@
 #define KIWI_MODULE_HPP
 
 #include <Kiwi/Config.hpp>
+#include <Kiwi/String.hpp>
 
 namespace kiwi {
 
-bool LoadModule(const std::string& name);
+bool LoadModule(const String& name);
 
-void FreeModule(const std::string& name);
+void UnloadModule(const String& name);
 
-void FreeAllModules();
+void UnloadAllModules();
 
 } // namespace kiwi
 

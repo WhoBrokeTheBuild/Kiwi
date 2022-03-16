@@ -9,6 +9,7 @@ IF(NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     SET(_binary_dir ${CMAKE_BINARY_DIR}/ThirdParty)
 
     # Set *_ROOT variables for config-based packages
+    SET(glm_ROOT ${_binary_dir}/glm/cmake PARENT_SCOPE)
     SET(fmt_ROOT ${_binary_dir}/fmt PARENT_SCOPE)
     SET(SDL2_ROOT ${_binary_dir}/SDL2 PARENT_SCOPE)
     SET(nlohmann_json_ROOT ${_binary_dir}/nlohmann_json PARENT_SCOPE)
@@ -62,6 +63,28 @@ ELSE()
     PROJECT(ThirdParty)
 
     ###
+    ### glm
+    ###
+
+    SET(glm_ROOT       ${CMAKE_BINARY_DIR}/glm/cmake)
+    SET(glm_SOURCE_DIR ${CMAKE_BINARY_DIR}/glm)
+
+    FIND_PACKAGE(glm CONFIG QUIET)
+
+    IF(NOT glm_FOUND OR NOT TARGET glm::glm)
+        ExternalProject_Add(
+            ThirdParty_glm
+            URL                 "https://github.com/g-truc/glm/releases/download/0.9.9.8/glm-0.9.9.8.zip"
+            URL_HASH            MD5=69895110052f0d711c9c54fbf385f6f5
+            SOURCE_DIR          ${glm_SOURCE_DIR}
+            CONFIGURE_COMMAND   ""
+            BUILD_COMMAND       ""
+            INSTALL_COMMAND     ""
+            UPDATE_COMMAND      ""
+        )
+    ENDIF()
+
+    ###
     ### fmt
     ###
 
@@ -69,7 +92,7 @@ ELSE()
     SET(fmt_SOURCE_DIR ${CMAKE_BINARY_DIR}/fmt_src)
     SET(fmt_BINARY_DIR ${CMAKE_BINARY_DIR}/fmt_bin)
 
-    FIND_PACKAGE(fmt CONFIG QUIET)
+    FIND_PACKAGE(fmt 7.0.0 CONFIG QUIET)
 
     IF(NOT fmt_FOUND)
         ExternalProject_Add(

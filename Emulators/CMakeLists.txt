@@ -8,7 +8,7 @@ MACRO(DEFINE_EMULATOR _target _prefix)
     TARGET_LINK_LIBRARIES(
         ${_target}
         PUBLIC
-            KiwiCommon
+            Kiwi
     )
 
     SET_TARGET_PROPERTIES(

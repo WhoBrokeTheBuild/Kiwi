@@ -49,7 +49,7 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ADD_SUBDIRECTORY(ThirdParty)
 
-FIND_PACKAGE(fmt CONFIG REQUIRED)
+FIND_PACKAGE(fmt 7.0.0 CONFIG REQUIRED)
 
 FIND_PACKAGE(SDL2 2.0.6 CONFIG REQUIRED)
 
@@ -81,23 +81,34 @@ ADD_SUBDIRECTORY(ROMs)
 SET(KIWI_ROMS_DIRECTORY ${CMAKE_SOURCE_DIR}/ROMs)
 
 ###
-### Libraries
+### Targets
 ###
 
 INCLUDE(ConfigureLibrary)
 
-ADD_SUBDIRECTORY(Common)
+ADD_SUBDIRECTORY(Kiwi)
 
-SET(KIWI_PROCESSOR_TARGET_LIST "")
 ADD_SUBDIRECTORY(Processors)
 
 SET(KIWI_EMULATOR_TARGET_LIST "")
 ADD_SUBDIRECTORY(Emulators)
 
-###
-### Executables
-###
-
 ADD_SUBDIRECTORY(Tools)
 
-ADD_SUBDIRECTORY(Kiwi)
+###
+### Launch Targets
+###
+
+INCLUDE(AddLaunchTarget)
+
+ADD_LAUNCH_TARGET("Kiwi" KiwiGUI)
+
+FOREACH(_target ${KIWI_EMULATOR_TARGET_LIST})
+
+    ADD_LAUNCH_TARGET(
+        ${_target}
+        KiwiGUI
+        --emulator ${_target}
+    )
+
+ENDFOREACH()

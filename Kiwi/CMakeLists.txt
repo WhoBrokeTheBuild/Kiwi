@@ -1,66 +1,62 @@
 
+###
+### Library
+###
+
 SET(_target Kiwi)
 
+ADD_LIBRARY(${_target} SHARED "")
+
+CONFIGURE_LIBRARY(${_target})
+
+TARGET_LINK_LIBRARIES(
+    ${_target}
+    PUBLIC
+        fmt::fmt
+)
+
+SET_TARGET_PROPERTIES(
+    ${_target}
+    PROPERTIES
+        DEFINE_SYMBOL "KIWI_EXPORT"
+)
+
 ###
-### Source Files
+### Executable
 ###
+
+SET(_target KiwiGUI)
 
 FILE(
     GLOB_RECURSE
     _source_list
-    "Public/*.h"
-    "Public/*.hpp"
-    "Private/*.h"
-    "Private/*.hpp"
-    "Private/*.c"
-    "Private/*.cpp"
+    "Source/*.h"
+    "Source/*.hpp"
+    "Source/*.c"
+    "Source/*.cpp"
 )
-
-FILE(
-    GLOB_RECURSE
-    _source_input_list
-    "Public/*.in"
-    "Private/*.in"
-)
-
-INCLUDE(ConfigureFileList)
-
-CONFIGURE_FILE_LIST("${_source_input_list}" _source_output_list)
 
 ADD_EXECUTABLE(
     ${_target}
     ${_source_list}
-    ${_source_output_list}
+)
+
+TARGET_INCLUDE_DIRECTORIES(
+    ${_target}
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source
+        ${CMAKE_CURRENT_BINARY_DIR}/Source
 )
 
 TARGET_LINK_LIBRARIES(
     ${_target}
     PUBLIC
-        KiwiCommon
+        Kiwi
         Qt5::Widgets
 )
 
-INCLUDE(AddLaunchTarget)
-
-IF(WIN32)
-    SET(_ext ".exe")
-ENDIF()
-
-SET(_executable ${CMAKE_CURRENT_BINARY_DIR}/${_target}${_ext})
-
-ADD_LAUNCH_TARGET(
-    "${_target}"
+SET_TARGET_PROPERTIES(
     ${_target}
-    ${CMAKE_CURRENT_SOURCE_DIR}
+    PROPERTIES
+        OUTPUT_NAME "Kiwi"
 )
-
-FOREACH(_emulator ${KIWI_EMULATOR_TARGET_LIST})
-
-    ADD_LAUNCH_TARGET(
-        "${_target} ${_emulator}"
-        ${_target}
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        --emulator ${_emulator}
-    )
-
-ENDFOREACH()

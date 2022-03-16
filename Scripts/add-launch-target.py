@@ -15,19 +15,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--binary-dir',
+    '--binaryDir',
     required=True,
-    help='CMake\'s Binary directory, will be used with executable.'
+    help='CMAKE_BINARY_DIR, will be used with executable.'
 )
 
 parser.add_argument(
-    '--working-dir',
-    required=True,
-    help='Directory to run the executable from.'
-)
-
-parser.add_argument(
-    '--runtime-path',
+    '--runtimePath',
     required=True,
     help='Semicolon-delimted list of runtime paths, will be used in PATH or LD_LIBRARY_PATH.'
 )
@@ -35,7 +29,7 @@ parser.add_argument(
 parser.add_argument(
     '--executable',
     required=True,
-    help='Path to executable to run, relative to binary-dir.'
+    help='Path to executable to run.'
 )
 
 parser.add_argument(
@@ -49,12 +43,11 @@ args = parser.parse_args()
 name       = args.name
 executable = args.executable
 arguments  = args.arguments
-binaryDir  = args.binary_dir
-workingDir = args.working_dir
+binaryDir  = args.binaryDir
 rootDir    = os.getcwd()
 
 # Replace with OS-specific multiple path separator (';' for PATH, ':' for LD_LIBRARY_PATH)
-runtimePath = args.runtime_path.replace(';', os.pathsep)
+runtimePath = args.runtimePath
 
 def add_or_update_config(data, configurations):
     found = False
@@ -93,9 +86,9 @@ data = {
     'name': name,
     'type': 'cppdbg',
     'request': 'launch',
-    'program': binaryDir + '/' + executable,
+    'program': executable,
     'args': arguments,
-    'cwd': workingDir,
+    'cwd': rootDir,
     'environment': []
 }
 
@@ -122,11 +115,14 @@ json.dump(launch, file, indent=4)
 ### Visual Studio
 ###
 
+isWindows = True
 if isWindows:
     if not os.path.isdir('.vs'):
         os.mkdir('.vs')
     
     filename = '.vs/launch.vs.json'
+
+    
 
     launch = {}
     try:
@@ -146,8 +142,11 @@ if isWindows:
         'type': 'default',
         'project': 'CMakeLists.txt',
         'args': arguments,
-        'projectTarget': '{} ({})'.format(os.path.basename(executable), executable.replace('/', '\\')),
-        'cwd': workingDir,
+        'projectTarget': '{} ({})'.format(
+            os.path.basename(executable),
+            os.path.relpath(executable, binaryDir).replace('/', '\\')
+        ),
+        'cwd': rootDir,
         'env': {
             'PATH': '${env.PATH};' + runtimePath
         },
