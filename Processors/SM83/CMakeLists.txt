@@ -1,4 +1,4 @@
 
-SET(_target KiwiSM83)
+SET(_target SM83)
 
 DEFINE_PROCESSOR(${_target} STATIC)

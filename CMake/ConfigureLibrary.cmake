@@ -1,3 +1,20 @@
+# ConfigureLibrary.cmake
+#
+# This will fully configure a library target with the following things:
+# * Add source files from:
+#   * Public/*.h
+#   * Public/*.hpp
+#   * Private/*.h
+#   * Private/*.hpp
+#   * Private/*.c
+#   * Private/*.cpp
+# * Configure and add source files from:
+#   * Public/*.in
+#   * Private/*.in
+# * Configure include directories
+# * Configure standard compile definitions and options
+# * Build and add tests from Tests/*.cpp
+#
 
 INCLUDE(ConfigureFileList)
 
@@ -94,7 +111,13 @@ MACRO(CONFIGURE_LIBRARY _target)
             ADD_TEST(
                 NAME ${_test_target}
                 COMMAND $<TARGET_FILE:${_test_target}>
-                WORKING_DIRECTORY Tests
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Tests
+            )
+
+            ADD_LAUNCH_TARGET(
+                "Test ${_target}-${_stem}"
+                ${CMAKE_CURRENT_SOURCE_DIR}/Tests
+                $<TARGET_FILE:${_test_target}>
             )
             
             IF(WIN32)
@@ -108,10 +131,8 @@ MACRO(CONFIGURE_LIBRARY _target)
                 PROPERTIES
                     ENVIRONMENT ${_env}
             )
+
         ENDFOREACH()
     ENDIF()
-
-    LIST(APPEND KIWI_EMULATOR_TARGET_LIST ${_target})
-    SET(KIWI_EMULATOR_TARGET_LIST ${KIWI_EMULATOR_TARGET_LIST} PARENT_SCOPE)
-
+    
 ENDMACRO()

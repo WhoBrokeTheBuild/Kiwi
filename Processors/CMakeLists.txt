@@ -3,6 +3,12 @@ MACRO(DEFINE_PROCESSOR _target)
         
     ADD_LIBRARY(${_target} STATIC "")
 
+    SET_TARGET_PROPERTIES(
+        ${_target}
+        PROPERTIES
+            OUTPUT_NAME "Kiwi${_target}"
+    )
+    
     CONFIGURE_LIBRARY(${_target})
 
     TARGET_LINK_LIBRARIES(

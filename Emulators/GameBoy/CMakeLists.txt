@@ -1,10 +1,10 @@
 
-SET(_target KiwiGameBoy)
+SET(_target GameBoy)
 
 DEFINE_EMULATOR(${_target})
 
 TARGET_LINK_LIBRARIES(
     ${_target}
     PUBLIC
-        KiwiSM83
+        SM83
 )

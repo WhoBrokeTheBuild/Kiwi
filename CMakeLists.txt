@@ -64,14 +64,19 @@ FIND_PACKAGE(Python3 COMPONENTS Interpreter REQUIRED)
 SET(GTEST_MSVC_SEARCH "MD")
 FIND_PACKAGE(GTest REQUIRED)
 
+###
+### Globals
+###
+
 INCLUDE(GetRuntimeDir)
 
 GET_RUNTIME_DIR(SDL2::SDL2 _SDL2_runtime_dir)
 GET_RUNTIME_DIR(GTest::gtest _GTest_runtime_dir)
 
-LIST(APPEND KIWI_RUNTIME_PATH
+SET(KIWI_RUNTIME_PATH_LIST
     ${_SDL2_runtime_dir}
     ${_GTest_runtime_dir}
+    CACHE INTERNAL ""
 )
 
 ###
@@ -80,41 +85,23 @@ LIST(APPEND KIWI_RUNTIME_PATH
 
 ADD_SUBDIRECTORY(ROMs)
 
-SET(KIWI_ROMS_DIRECTORY ${CMAKE_SOURCE_DIR}/ROMs)
+SET(KIWI_ROMS_DIRECTORY ${CMAKE_SOURCE_DIR}/ROMs CACHE INTERNAL "")
 
 ###
 ### Targets
 ###
 
 INCLUDE(ConfigureLibrary)
+INCLUDE(AddLaunchTarget)
 
 ADD_SUBDIRECTORY(Kiwi)
 
 ADD_SUBDIRECTORY(Processors)
 
-SET(KIWI_EMULATOR_TARGET_LIST "")
 ADD_SUBDIRECTORY(Emulators)
+
+ADD_SUBDIRECTORY(GUI)
 
 ADD_SUBDIRECTORY(Tools)
 
-###
-### Launch Targets
-###
-
-INCLUDE(AddLaunchTarget)
-
-ADD_LAUNCH_TARGET(Kiwi Kiwi KiwiGUI)
-
-FOREACH(_target ${KIWI_EMULATOR_TARGET_LIST})
-
-    # Remove leading "Kiwi"
-    STRING(SUBSTRING "${_target}" 4 -1 _name)
-
-    ADD_LAUNCH_TARGET(
-        ${_target}
-        "Kiwi (${_name})"
-        KiwiGUI
-        --emulator ${_target}
-    )
-
-ENDFOREACH()
+GENERATE_LAUNCH_TARGET_CONFIG()

@@ -3,12 +3,12 @@
 namespace kiwi {
 namespace SM83 {
 
-CPU::CPU()
+Processor::Processor()
 {
 
 }
 
-CPU::~CPU()
+Processor::~Processor()
 {
     
 }

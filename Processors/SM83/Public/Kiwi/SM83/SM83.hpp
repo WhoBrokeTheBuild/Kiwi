@@ -6,7 +6,7 @@
 namespace kiwi {
 namespace SM83 {
 
-class CPU
+class Processor
 {
 public:
 
@@ -92,14 +92,14 @@ public:
 
     
 
-    CPU();
+    Processor();
     
-    virtual ~CPU();
+    virtual ~Processor();
 
 private:
 
 
-}; // class CPU
+}; // class Processor
 
 } // namespace SM83
 } // namespace kiwi

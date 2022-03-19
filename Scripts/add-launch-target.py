@@ -3,31 +3,14 @@
 import os
 import json
 import argparse
-
-isWindows = (os.name == 'nt')
-
-if os.name == 'posix':
-    import platform
-    isMacOS = (platform.system() == 'Darwin')
+import platform
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
     '--name',
     required=True,
-    help='Name of the launch target to generate.'
-)
-
-parser.add_argument(
-    '--binaryDir',
-    required=True,
-    help='CMAKE_BINARY_DIR, will be used with executable.'
-)
-
-parser.add_argument(
-    '--runtimePath',
-    required=True,
-    help='Semicolon-delimted list of runtime paths, will be used in PATH or LD_LIBRARY_PATH.'
+    help='Name of the config target to generate.'
 )
 
 parser.add_argument(
@@ -37,6 +20,25 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    '--runtimePathList',
+    required=True,
+    help='Semicolon-delimted list of paths to search for dll/so files, will be used in PATH or LD_LIBRARY_PATH.'
+)
+
+parser.add_argument(
+    '--binaryDir',
+    required=True,
+    help='CMAKE_BINARY_DIR, will be used with executable.'
+)
+
+parser.add_argument(
+    '--workingDir',
+    required=True,
+    help='Directory to run the executable from.'
+)
+
+
+parser.add_argument(
     'arguments',
     nargs='*',
     help='Additional arguments to pass to the executable.'
@@ -44,11 +46,12 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-name       = args.name
+name = args.name
 executable = args.executable
-arguments  = args.arguments
-binaryDir  = args.binaryDir
-runtimePath = args.runtimePath
+arguments = args.arguments
+runtimePathList = args.runtimePathList
+binaryDir = args.binaryDir
+workingDir = args.workingDir
 
 def add_or_update_config(data, configurations):
     found = False
@@ -70,18 +73,18 @@ if not os.path.isdir('.vscode'):
 
 filename = '.vscode/launch.json'
 
-launch = {}
+config = {}
 try:
     file = open(filename, 'r')
-    launch = json.load(file)
+    config = json.load(file)
 except:
     pass
 
-if 'version' not in launch:
-    launch['version'] = '0.2.0'
+if 'version' not in config:
+    config['version'] = '0.2.0'
 
-if 'configurations' not in launch:
-    launch['configurations'] = []
+if 'configurations' not in config:
+    config['configurations'] = []
 
 data = {
     'name': name,
@@ -89,54 +92,54 @@ data = {
     'request': 'launch',
     'program': executable,
     'args': arguments,
-    'cwd': os.getcwd(),
+    'cwd': workingDir,
     'environment': []
 }
 
-if isWindows:
+if platform.system() == 'Windows':
     data['type'] = 'cppvsdbg'
     data['environment'].append({
         'name': 'PATH',
-        'value': '${env:PATH};' + runtimePath
+        'value': '${env:PATH};' + runtimePathList
     })
     data['console'] = 'integratedTerminal'
 else:
     data['environment'].append({
         'name': 'LD_LIBRARY_PATH',
-        'value': runtimePath
+        'value': runtimePathList
     })
     data['externalConsole'] = False
 
-if isMacOS:
+if platform.system() == 'Darwin':
     data['MIMode'] = 'lldb'
 
-add_or_update_config(data, launch['configurations'])
+add_or_update_config(data, config['configurations'])
 
 file = open(filename, 'w')
-json.dump(launch, file, indent=4)
+json.dump(config, file, indent=4)
 
 ###
 ### Visual Studio
 ###
 
-if isWindows:
+if platform.system() == 'Windows':
     if not os.path.isdir('.vs'):
         os.mkdir('.vs')
     
     filename = '.vs/launch.vs.json'
 
-    launch = {}
+    config = {}
     try:
         file = open(filename, 'r')
-        launch = json.load(file)
+        config = json.load(file)
     except:
         pass
 
-    if 'version' not in launch:
-        launch['version'] = '0.2.1'
+    if 'version' not in config:
+        config['version'] = '0.2.1'
 
-    if 'configurations' not in launch:
-        launch['configurations'] = []
+    if 'configurations' not in config:
+        config['configurations'] = []
 
     data = {
         'name': name,
@@ -147,13 +150,13 @@ if isWindows:
             os.path.basename(executable),
             os.path.relpath(executable, binaryDir).replace('/', '\\')
         ),
-        'cwd': os.getcwd(),
+        'cwd': workingDir,
         'env': {
-            'PATH': '${env.PATH};' + runtimePath
+            'PATH': '${env.PATH};' + runtimePathList
         },
     }
 
-    add_or_update_config(data, launch['configurations'])
+    add_or_update_config(data, config['configurations'])
 
     file = open(filename, 'w')
-    json.dump(launch, file, indent=4)
+    json.dump(config, file, indent=4)

@@ -5,81 +5,82 @@
 
 using namespace kiwi::SM83;
 
-Registers R;
+Processor P;
 
 TEST(BitPacking, Flags) {
-    R.F = 0x00;
-    EXPECT_EQ(0, R.FZ);
-    EXPECT_EQ(0, R.FN);
-    EXPECT_EQ(0, R.FH);
-    EXPECT_EQ(0, R.FC);
+    P.F = 0x00;
+    EXPECT_EQ(0, P.FZ);
+    EXPECT_EQ(0, P.FN);
+    EXPECT_EQ(0, P.FH);
+    EXPECT_EQ(0, P.FC);
 
-    R.F = 0xFF;
-    EXPECT_EQ(1, R.FZ);
-    EXPECT_EQ(1, R.FN);
-    EXPECT_EQ(1, R.FH);
-    EXPECT_EQ(1, R.FC);
+    P.F = 0xFF;
+    EXPECT_EQ(1, P.FZ);
+    EXPECT_EQ(1, P.FN);
+    EXPECT_EQ(1, P.FH);
+    EXPECT_EQ(1, P.FC);
 
-    R.F = 0b01010000;
-    EXPECT_EQ(1, R.FZ);
-    EXPECT_EQ(0, R.FN);
-    EXPECT_EQ(1, R.FH);
-    EXPECT_EQ(0, R.FC);
+    P.F = 0b01010000;
+    EXPECT_EQ(1, P.FZ);
+    EXPECT_EQ(0, P.FN);
+    EXPECT_EQ(1, P.FH);
+    EXPECT_EQ(0, P.FC);
 
-    R.F = 0b10101111;
-    EXPECT_EQ(0, R.FZ);
-    EXPECT_EQ(1, R.FN);
-    EXPECT_EQ(0, R.FH);
-    EXPECT_EQ(1, R.FC);
+    P.F = 0b10101111;
+    EXPECT_EQ(0, P.FZ);
+    EXPECT_EQ(1, P.FN);
+    EXPECT_EQ(0, P.FH);
+    EXPECT_EQ(1, P.FC);
 
-    R.AF = 0x0F;
-    EXPECT_EQ(0, R.FZ);
-    EXPECT_EQ(0, R.FN);
-    EXPECT_EQ(0, R.FH);
-    EXPECT_EQ(0, R.FC);
+    P.AF = 0x0F;
+    EXPECT_EQ(0, P.FZ);
+    EXPECT_EQ(0, P.FN);
+    EXPECT_EQ(0, P.FH);
+    EXPECT_EQ(0, P.FC);
 
-    R.AF = 0xF0;
-    EXPECT_EQ(1, R.FZ);
-    EXPECT_EQ(1, R.FN);
-    EXPECT_EQ(1, R.FH);
-    EXPECT_EQ(1, R.FC);
+    P.AF = 0xF0;
+    EXPECT_EQ(1, P.FZ);
+    EXPECT_EQ(1, P.FN);
+    EXPECT_EQ(1, P.FH);
+    EXPECT_EQ(1, P.FC);
 }
 
 TEST(BitPacking, General) {
-    R.AF = 0xFF00;
-    EXPECT_EQ(0xFF, R.A);
-    EXPECT_EQ(0x00, R.F);
+    P.AF = 0xFF00;
+    EXPECT_EQ(0xFF, P.A);
+    EXPECT_EQ(0x00, P.F);
 
-    R.AF = 0x00FF;
-    EXPECT_EQ(0x00, R.A);
-    EXPECT_EQ(0xFF, R.F);
+    P.AF = 0x00FF;
+    EXPECT_EQ(0x00, P.A);
+    EXPECT_EQ(0xFF, P.F);
 
-    R.BC = 0xFF00;
-    EXPECT_EQ(0xFF, R.B);
-    EXPECT_EQ(0x00, R.C);
+    P.BC = 0xFF00;
+    EXPECT_EQ(0xFF, P.B);
+    EXPECT_EQ(0x00, P.C);
     
-    R.BC = 0x00FF;
-    EXPECT_EQ(0x00, R.B);
-    EXPECT_EQ(0xFF, R.C);
+    P.BC = 0x00FF;
+    EXPECT_EQ(0x00, P.B);
+    EXPECT_EQ(0xFF, P.C);
 
-    R.DE = 0xFF00;
-    EXPECT_EQ(0xFF, R.D);
-    EXPECT_EQ(0x00, R.E);
+    P.DE = 0xFF00;
+    EXPECT_EQ(0xFF, P.D);
+    EXPECT_EQ(0x00, P.E);
     
-    R.DE = 0x00FF;
-    EXPECT_EQ(0x00, R.D);
-    EXPECT_EQ(0xFF, R.E);
+    P.DE = 0x00FF;
+    EXPECT_EQ(0x00, P.D);
+    EXPECT_EQ(0xFF, P.E);
 
-    R.HL = 0xFF00;
-    EXPECT_EQ(0xFF, R.H);
-    EXPECT_EQ(0x00, R.L);
+    P.HL = 0xFF00;
+    EXPECT_EQ(0xFF, P.H);
+    EXPECT_EQ(0x00, P.L);
     
-    R.HL = 0x00FF;
-    EXPECT_EQ(0x00, R.H);
-    EXPECT_EQ(0xFF, R.L);
+    P.HL = 0x00FF;
+    EXPECT_EQ(0x00, P.H);
+    EXPECT_EQ(0xFF, P.L);
 }
 
 int main(int argc, char ** argv)
 {
+    testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
