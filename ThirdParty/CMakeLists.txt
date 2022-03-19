@@ -200,6 +200,26 @@ ELSE()
         )
     ENDIF()
 
+    ###
+    ### Python3
+    ###
+    
+    FIND_PACKAGE(Python3 COMPONENTS Interpreter QUIET)
+
+    IF(NOT Python3_FOUND)
+        MESSAGE(SEND_ERROR "Unable to find Python3, install to continue https://www.python.org/downloads/")
+    ENDIF()
+
+    ###
+    ### Qt5
+    ###
+
+    FIND_PACKAGE(Qt5 COMPONENTS Widgets QUIET)
+
+    IF(NOT Qt5_FOUND)
+        MESSAGE(SEND_ERROR "Unable to find Qt5, install to continue https://www.qt.io/download-qt-installer")
+    ENDIF()
+
 ENDIF()
 
 
