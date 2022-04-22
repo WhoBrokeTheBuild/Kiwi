@@ -135,13 +135,13 @@
 
 #if KIWI_PLATFORM_WINDOWS
 
-    #define KIWI_PATH_SEPARATOR '\\'
-    #define KIWI_PATH_LIST_SEPARATOR ';'
+    #define KIWI_PATH_SEPARATOR "\\"
+    #define KIWI_PATH_LIST_SEPARATOR ";"
 
 #else
 
-    #define KIWI_PATH_SEPARATOR '/'
-    #define KIWI_PATH_LIST_SEPARATOR ':'
+    #define KIWI_PATH_SEPARATOR "/"
+    #define KIWI_PATH_LIST_SEPARATOR ":"
 
 #endif
 
@@ -163,6 +163,11 @@
 
 #define _KIWI_STRINGIFY(STR) #STR
 #define KIWI_STRINGIFY(STR) _KIWI_STRINGIFY(STR)
+
+#define KIWI_DISALLOW_COPY_AND_ASSIGN(CLASS) \
+    CLASS(const CLASS&) = delete;                                                                   \
+    CLASS& operator=(const CLASS&) = delete;
+
 
 ///
 /// Shared Library Configuration

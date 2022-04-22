@@ -64,6 +64,7 @@ inline std::string_view _LogGetFilename(std::string_view filename)
 /// @param tag The prefix to the log message, wrapped in (), usually KIWI_ANCHOR
 /// @param message The message to log
 ///
+KIWI_API
 void LogMessage(std::string_view tag, std::string_view message);
 
 ///

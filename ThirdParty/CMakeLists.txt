@@ -11,8 +11,8 @@ IF(NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     # Set *_ROOT variables for config-based packages
     SET(glm_ROOT ${_binary_dir}/glm/cmake PARENT_SCOPE)
     SET(fmt_ROOT ${_binary_dir}/fmt PARENT_SCOPE)
-    SET(SDL2_ROOT ${_binary_dir}/SDL2 PARENT_SCOPE)
     SET(nlohmann_json_ROOT ${_binary_dir}/nlohmann_json PARENT_SCOPE)
+    SET(cflags_ROOT ${_binary_dir}/cflags PARENT_SCOPE)
 
     # Set CMAKE_PREFIX_PATH for find-based packages
     LIST(APPEND CMAKE_PREFIX_PATH
@@ -114,39 +114,6 @@ ELSE()
     ENDIF()
 
     ###
-    ### SDL2
-    ###
-
-    SET(SDL2_ROOT       ${CMAKE_BINARY_DIR}/SDL2)
-    SET(SDL2_SOURCE_DIR ${CMAKE_BINARY_DIR}/SDL2_src)
-    SET(SDL2_BINARY_DIR ${CMAKE_BINARY_DIR}/SDL2_bin)
-
-    FIND_PACKAGE(SDL2 2.0.6 CONFIG QUIET)
-
-    IF(CMAKE_GENERATOR STREQUAL "Visual Studio 16 2019")
-        FIND_PACKAGE(patch REQUIRED)
-        SET(_SDL2_PATCH_COMMAND ${patch_COMMAND} ${SDL2_SOURCE_DIR}/CMakeLists.txt ${CMAKE_SOURCE_DIR}/SDL2_vcruntime.patch )
-    ENDIF()
-
-    IF(NOT SDL2_FOUND)
-        ExternalProject_Add(
-            ThirdParty_SDL2
-            URL                 "https://www.libsdl.org/release/SDL2-2.0.14.tar.gz"
-            URL_HASH            MD5=76ed4e6da9c07bd168b2acd9bfefab1b
-            SOURCE_DIR          ${SDL2_SOURCE_DIR}
-            BINARY_DIR          ${SDL2_BINARY_DIR}
-            CMAKE_ARGS          -DCMAKE_INSTALL_PREFIX=${SDL2_ROOT}
-                                -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                                -DBUILD_SHARED_LIBS=ON
-            BUILD_COMMAND       ""
-            UPDATE_COMMAND      ""
-            TEST_COMMAND        ""
-            INSTALL_COMMAND     ${CMAKE_COMMAND} --build . --target install
-            PATCH_COMMAND       ${_SDL2_PATCH_COMMAND}
-        )
-    ENDIF()
-
-    ###
     ### nlohmann_json
     ###
 
@@ -163,6 +130,27 @@ ELSE()
             SOURCE_DIR          ${nlohmann_json_SOURCE_DIR}
             CMAKE_ARGS          -DCMAKE_INSTALL_PREFIX=${nlohmann_json_ROOT}
                                 -DJSON_BuildTests=OFF
+            BUILD_COMMAND       ""
+            UPDATE_COMMAND      ""
+        )
+    ENDIF()
+
+    ###
+    ### cflags
+    ###
+
+    SET(cflags_ROOT       ${CMAKE_BINARY_DIR}/cflags)
+    SET(cflags_SOURCE_DIR ${CMAKE_BINARY_DIR}/cflags_src)
+
+    FIND_PACKAGE(cflags CONFIG QUIET)
+
+    IF(NOT cflags_FOUND)
+        ExternalProject_Add(
+            ThirdParty_cflags
+            URL                 "https://github.com/WhoBrokeTheBuild/cflags/archive/refs/tags/v3.0.0.zip"
+            URL_HASH            MD5=643c4b06808afc53115e51f8cb2f23db
+            SOURCE_DIR          ${cflags_SOURCE_DIR}
+            CMAKE_ARGS          -DCMAKE_INSTALL_PREFIX=${cflags_ROOT}
             BUILD_COMMAND       ""
             UPDATE_COMMAND      ""
         )
@@ -214,10 +202,10 @@ ELSE()
     ### Qt5
     ###
 
-    FIND_PACKAGE(Qt5 COMPONENTS Widgets QUIET)
+    FIND_PACKAGE(Qt6 COMPONENTS Widgets QUIET)
 
-    IF(NOT Qt5_FOUND)
-        MESSAGE(SEND_ERROR "Unable to find Qt5, install to continue https://www.qt.io/download-qt-installer")
+    IF(NOT Qt6_FOUND)
+        MESSAGE(SEND_ERROR "Unable to find Qt6, install to continue https://www.qt.io/download-qt-installer")
     ENDIF()
 
 ENDIF()

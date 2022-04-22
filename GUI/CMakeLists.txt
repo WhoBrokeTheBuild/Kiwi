@@ -19,20 +19,16 @@ SET_TARGET_PROPERTIES(
     ${_target}
     PROPERTIES
         OUTPUT_NAME "Kiwi"
-)
 
-TARGET_INCLUDE_DIRECTORIES(
-    ${_target}
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/Source
-        ${CMAKE_CURRENT_BINARY_DIR}/Source
+        AUTOMOC ON # Qt Meta-Object Compiler
+        AUTORCC ON # Qt Resource Compiler
+        AUTOUIC ON # Qt UI Compiler
 )
 
 TARGET_LINK_LIBRARIES(
     ${_target}
     PUBLIC
         Kiwi
-        Qt5::Widgets
 )
 
 ###
@@ -41,7 +37,7 @@ TARGET_LINK_LIBRARIES(
 
 ADD_LAUNCH_TARGET(
     Kiwi
-    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_BINARY_DIR}
     $<TARGET_FILE:${_target}>
 )
 
@@ -49,9 +45,9 @@ FOREACH(_emulator_target ${KIWI_EMULATOR_TARGET_LIST})
 
     ADD_LAUNCH_TARGET(
         "Kiwi ${_emulator_target}"
-        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_BINARY_DIR}
         $<TARGET_FILE:${_target}>
-        --emulator ${_emulator_target}
+        --emulator $<TARGET_FILE:${_emulator_target}>
     )
 
 ENDFOREACH()

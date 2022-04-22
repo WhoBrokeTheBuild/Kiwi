@@ -37,7 +37,6 @@ parser.add_argument(
     help='Directory to run the executable from.'
 )
 
-
 parser.add_argument(
     'arguments',
     nargs='*',
@@ -57,7 +56,7 @@ def add_or_update_config(data, configurations):
     found = False
     for i in range(0, len(configurations)):
         if configurations[i]['name'] == data['name']:
-            configurations[i] = data
+            configurations[i].update(data)
             found = True
             break
     
@@ -160,3 +159,55 @@ if platform.system() == 'Windows':
 
     file = open(filename, 'w')
     json.dump(config, file, indent=4)
+
+###
+### RenderDoc
+###
+
+filename = os.path.join(binaryDir, name + '.cap')
+
+data = {
+    "rdocCaptureSettings": 1,
+    "settings": {
+        "autoStart": False,
+        "commandLine": " ".join(arguments),
+        "environment": [ ],
+        "executable": executable,
+        "inject": False,
+        "numQueuedFrames": 0,
+        "options": {
+            "allowFullscreen": True,
+            "allowVSync": True,
+            "apiValidation": True,
+            "captureAllCmdLists": True,
+            "captureCallstacks": False,
+            "captureCallstacksOnlyDraws": False,
+            "debugOutputMute": False,
+            "delayForDebugger": 0,
+            "hookIntoChildren": False,
+            "refAllResources": False,
+            "verifyBufferAccess": False
+        },
+        "queuedFrameCap": 0,
+        "workingDir": workingDir
+    }
+}
+
+if platform.system() == 'Windows':
+    data['settings']['environment'].append({
+        "separator": "Platform style",
+        "type": "Append",
+        "value": runtimePathList,
+        "variable": "PATH"
+    })
+else:
+    data['settings']['environment'].append({
+        "separator": "Platform style",
+        "type": "Set",
+        "value": runtimePathList,
+        "variable": "LD_LIBRARY_PATH"
+    })
+
+file = open(filename, 'w')
+json.dump(data, file, indent=4)
+

@@ -5,12 +5,12 @@
 # The resulting list of filenames will be stored in ${_output_list}.
 #
 # For example:
-#   ${CMAKE_CURRENT_SOURCE_DIR}/Source/Config.h.in
+#   ${CMAKE_CURRENT_SOURCE_DIR}/Source/Config.hpp.in
 # will be configured and stored in 
-#   ${CMAKE_BINARY_SOURCE_DIR}/Source/config.h
+#   ${CMAKE_CURRENT_BINARY_DIR}/Source/Config.hpp
 #
 
-MACRO(CONFIGURE_FILE_LIST _input_list _output_list)
+MACRO(CONFIGURE_FILE_LIST _input_list _output_list_variable)
     FOREACH(_input ${_input_list})
         # Replace leading source directory in path with binary directory
         STRING(REPLACE 
@@ -30,6 +30,6 @@ MACRO(CONFIGURE_FILE_LIST _input_list _output_list)
 
         CONFIGURE_FILE(${_input} ${_output})
 
-        LIST(APPEND ${_output_list} ${_output})
+        LIST(APPEND ${_output_list_variable} ${_output})
     ENDFOREACH()
 ENDMACRO()
