@@ -70,21 +70,9 @@ void MainWindow::loadEmulator(const String& name)
 
         // TODO: Check for full filepath
         
-        String libName = "lib" + name;
-
-        #if defined(KIWI_PLATFORM_APPLE)
-
-            libName += ".dylib";
-
-        #else
-
-            libName += ".so";
-
-        #endif
-
-        _emulatorLibrary = dlopen(libName.c_str(), RTLD_GLOBAL | RTLD_NOW);
+        _emulatorLibrary = dlopen(name.c_str(), RTLD_GLOBAL | RTLD_NOW);
         if (!_emulatorLibrary) {
-            throw RuntimeError("Failed to load library '{}', {}", libName, dlerror());
+            throw RuntimeError("Failed to load library '{}', {}", name, dlerror());
         }
 
         _emulatorDefinition = (EmulatorDefinition *)dlsym(_emulatorLibrary, symbolName);

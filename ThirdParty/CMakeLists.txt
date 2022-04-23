@@ -112,7 +112,7 @@ ELSE()
             INSTALL_COMMAND     ${CMAKE_COMMAND} --build . --target install
         )
     ENDIF()
-
+    
     ###
     ### nlohmann_json
     ###
@@ -199,7 +199,7 @@ ELSE()
     ENDIF()
 
     ###
-    ### Qt5
+    ### Qt6
     ###
 
     FIND_PACKAGE(Qt6 COMPONENTS Widgets QUIET)

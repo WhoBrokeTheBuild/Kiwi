@@ -159,6 +159,40 @@
 
 #endif
 
+#if KIWI_COMPILER_MSVC
+
+    #define KIWI_DISABLE_WARNINGS() \
+        __pragma(warning(push, 0))
+    
+    #define KIWI_ENABLE_WARNINGS() \
+        __pragma(warning(pop))
+
+#elif KIWI_COMPILER_CLANG
+
+    #define KIWI_DISABLE_WARNINGS() \
+        _Pragma("clang diagnostic push") \
+        _Pragma("clang diagnostic ignored \"-Wall\"")
+    
+    #define KIWI_ENABLE_WARNINGS() \
+        _Pragma("clang diagnostic pop")
+
+#elif KIWI_COMPILER_GCC
+
+    #define KIWI_DISABLE_WARNINGS() \
+        _Pragma("GCC diagnostic push") \
+        _Pragma("GCC diagnostic ignored \"-Wall\"")
+    
+    #define KIWI_ENABLE_WARNINGS() \
+        _Pragma("GCC diagnostic pop")
+
+#else
+
+    #define KIWI_DISABLE_WARNINGS()
+
+    #define KIWI_ENABLE_WARNINGS()
+
+#endif
+
 #define KIWI_UNUSED(V) (void)(V)
 
 #define _KIWI_STRINGIFY(STR) #STR

@@ -3,8 +3,12 @@
 
 #include <Kiwi/Config.hpp>
 
-#define VMA_STATS_STRING_ENABLED 0
-#include <vk_mem_alloc.h>
+KIWI_DISABLE_WARNINGS()
+
+    #define VMA_STATS_STRING_ENABLED 0
+    #include <vk_mem_alloc.h>
+
+KIWI_ENABLE_WARNINGS()
 
 #include <QVulkanWindowRenderer>
 

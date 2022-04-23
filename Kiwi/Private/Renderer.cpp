@@ -2,8 +2,12 @@
 #include <Kiwi/Emulator.hpp>
 #include <Kiwi/Exception.hpp>
 
-#define VMA_IMPLEMENTATION
-#include <vk_mem_alloc.h>
+KIWI_DISABLE_WARNINGS()
+
+    #define VMA_IMPLEMENTATION
+    #include <vk_mem_alloc.h>
+
+KIWI_ENABLE_WARNINGS()
 
 namespace kiwi {
 

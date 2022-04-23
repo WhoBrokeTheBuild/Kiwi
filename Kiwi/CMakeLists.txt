@@ -53,6 +53,7 @@ TARGET_LINK_LIBRARIES(
         nlohmann_json::nlohmann_json
         cflags::cppflags
         Qt6::Widgets
+        ${CMAKE_DL_LIBS}
 )
 
 SET_TARGET_PROPERTIES(

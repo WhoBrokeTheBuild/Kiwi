@@ -37,7 +37,7 @@ public:
 
     void doStep();
 
-    void doFrame();
+    void doFrame() override;
 
 protected:
 

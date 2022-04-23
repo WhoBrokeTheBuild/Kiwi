@@ -7,6 +7,9 @@
 
 #include "Widgets/mainwindow.hpp"
 
+#include <QApplication>
+#include <QVulkanWindow>
+
 int main(int argc, char * argv[])
 {
     try {
