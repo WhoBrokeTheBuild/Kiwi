@@ -24,27 +24,19 @@ public:
 
     void startNextFrame() override;
 
-    inline Vec2u size() const {
-        return _size;
-    }
-    
-    inline uint width() const {
-        return _size.x;
-    }
-    
-    inline uint height() const {
-        return _size.y;
-    }
-
     inline Span<uint8_t> image() {
         return _image;
     }
 
+    inline Vec2u imageSize() const {
+        return _imageSize;
+    }
+
 protected:
 
-    Vec2u _size;
-
     List<uint8_t> _image;
+
+    Vec2u _imageSize;
 
     const unsigned _components = 4; // RGBA
 

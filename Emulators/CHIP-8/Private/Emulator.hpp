@@ -31,13 +31,27 @@ public:
 
     uint8_t V[0xF];
 
+    int WaitInputVx;
+
     Emulator();
 
     virtual ~Emulator();
 
+    void reset();
+
+    bool loadROM(const String& filename) override;
+
     void doStep();
 
     void doFrame() override;
+    
+    unsigned targetFPS() override {
+        return 30;
+    }
+
+    QSize initialSize() override {
+        return { WIDTH * 10, HEIGHT * 10 };
+    };
 
 protected:
 

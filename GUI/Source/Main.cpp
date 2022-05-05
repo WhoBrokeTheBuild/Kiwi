@@ -7,11 +7,13 @@
 
 #include "Widgets/mainwindow.hpp"
 
-#include <QApplication>
-#include <QVulkanWindow>
+#include <cstdlib>
+#include <ctime>
 
 int main(int argc, char * argv[])
 {
+    srand(time(0));
+
     try {
         QApplication app(argc, argv);
 

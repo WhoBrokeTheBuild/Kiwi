@@ -7,11 +7,11 @@ namespace kiwi {
 #include "Render2D.vert.spv.hpp"
 #include "Render2D.frag.spv.hpp"
 
-Renderer2D::Renderer2D(Emulator * emulator, Vec2u size)
+Renderer2D::Renderer2D(Emulator * emulator, Vec2u imageSize)
     : Renderer(emulator)
-    , _size(size)
+    , _imageSize(imageSize)
 {
-    _image.resize(_size.x * _size.y * _components);
+    _image.resize(_imageSize.x * _imageSize.y * _components);
 
     // Set image to black
     memset(_image.data(), 0, _image.size());
@@ -68,7 +68,7 @@ void Renderer2D::initResources()
         .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
         .imageType = VK_IMAGE_TYPE_2D,
         .format = VK_FORMAT_R8G8B8A8_UNORM,
-        .extent = VkExtent3D{ _size.x, _size.y, 1 },
+        .extent = VkExtent3D{ _imageSize.x, _imageSize.y, 1 },
         .mipLevels = 1,
         .arrayLayers = 1,
         .samples = VK_SAMPLE_COUNT_1_BIT,
@@ -437,10 +437,18 @@ void Renderer2D::initResources()
         .pDynamicStates = dynamicStateList.data(),
     };
 
+    VkPushConstantRange pushConstantRange = {
+        .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+        .offset = 0,
+        .size = 2 * sizeof(Vec2),
+    };
+
     VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
         .setLayoutCount = 1,
         .pSetLayouts = &_vkDescriptorSetLayout,
+        .pushConstantRangeCount = 1,
+        .pPushConstantRanges = &pushConstantRange,
     };
 
     vkResult = _vkDeviceFuncs->vkCreatePipelineLayout(
@@ -617,7 +625,7 @@ void Renderer2D::startNextFrame()
             .layerCount = 1,
         },
         .imageOffset = VkOffset3D{ 0, 0, 0 },
-        .imageExtent = VkExtent3D{ _size.x, _size.y, 1 },
+        .imageExtent = VkExtent3D{ _imageSize.x, _imageSize.y, 1 },
     };
 
     _vkDeviceFuncs->vkCmdCopyBufferToImage(
@@ -691,6 +699,31 @@ void Renderer2D::startNextFrame()
         },
     };
     _vkDeviceFuncs->vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+    float zoom = std::min(
+        (float)swapChainImageSize.width() / (float)_imageSize.x,
+        (float)swapChainImageSize.height() / (float)_imageSize.y
+    );
+
+    Vec2 size = {
+        (float)_imageSize.x / (float)swapChainImageSize.width() * zoom,
+        (float)_imageSize.y / (float)swapChainImageSize.height() * zoom,
+    };
+
+    Vec2 offset = {
+        (1.0f - size.x) * 0.5f,
+        (1.0f - size.y) * 0.5f,
+    };
+
+    Vec2 pushConstants[] = { size, offset };
+
+    _vkDeviceFuncs->vkCmdPushConstants(
+        commandBuffer,
+        _vkPipelineLayout,
+        VK_SHADER_STAGE_FRAGMENT_BIT,
+        0,
+        sizeof(pushConstants), pushConstants
+    );
 
     _vkDeviceFuncs->vkCmdBindPipeline(
         commandBuffer,

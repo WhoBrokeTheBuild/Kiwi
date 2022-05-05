@@ -2,8 +2,13 @@
 #define KIWI_EMULATOR_HPP
 
 #include <Kiwi/Config.hpp>
+#include <Kiwi/Math.hpp>
+#include <Kiwi/String.hpp>
 
 #include <QVulkanWindow>
+
+#include <atomic>
+#include <thread>
 
 namespace kiwi {
     
@@ -15,11 +20,27 @@ public:
 
     virtual ~Emulator();
 
-    virtual void doFrame() { }
+    virtual bool loadROM(const String& filename) = 0;
+
+    virtual void run();
+
+    virtual void doFrame() = 0;
+
+    virtual unsigned targetFPS() {
+        return 60;
+    }
+
+    virtual QSize initialSize() {
+        return { 640, 480 };
+    }
 
 protected:
 
     virtual QVulkanWindowRenderer * createRenderer() = 0;
+
+    std::thread _thread;
+
+    std::atomic_bool _running = false;
 
 };
 

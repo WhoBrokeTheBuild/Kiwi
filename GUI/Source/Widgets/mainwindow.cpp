@@ -93,6 +93,8 @@ void MainWindow::loadEmulator(const String& name)
 
     setCentralWidget(QWidget::createWindowContainer(_emulator));
 
+    resize(_emulator->initialSize() + QSize(0, menuBar()->height()));
+
     Log(KIWI_ANCHOR, "Loaded emulator '{}'", _emulatorDefinition->Name);
 }
 

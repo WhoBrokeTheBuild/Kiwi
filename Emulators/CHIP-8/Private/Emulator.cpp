@@ -1,8 +1,9 @@
 #include "Emulator.hpp"
 
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
 #include <ctime>
+#include <fstream>
 
 namespace kiwi {
 namespace CHIP8 {
@@ -10,23 +11,17 @@ namespace CHIP8 {
 Emulator::Emulator()
     : _renderer(new Renderer2D(this, { WIDTH, HEIGHT }))
 {
-    srand(time(0));
-
-    resize(WIDTH * 10, HEIGHT * 10);
-
-    memset(RAM, 0, sizeof(RAM));
-    initFont();
-
     setFlags(QVulkanWindow::Flag::PersistentResources);
+
+    reset();
 
     // Test image data
     auto image = _renderer->image();
-    image[0] = 0xFF;
-    // for (size_t i = 0; i < image.size(); i += 4) {
-    //     image[i + 0] = rand() % 256;
-    //     image[i + 1] = rand() % 256;
-    //     image[i + 2] = rand() % 256;
-    // }
+    for (size_t i = 0; i < image.size(); i += 4) {
+        image[i + 0] = rand() % 256;
+        image[i + 1] = rand() % 256;
+        image[i + 2] = rand() % 256;
+    }
 }
 
 Emulator::~Emulator()
@@ -34,14 +29,42 @@ Emulator::~Emulator()
     _renderer = nullptr;
 }
 
+void Emulator::reset()
+{
+    memset(RAM, 0, sizeof(RAM));
+
+    I = 0x000;
+    PC = 0x200;
+    SP = 0x000;
+    DelayTimer = 0;
+    SoundTimer = 0;
+    
+    memset(V, 0, sizeof(V));
+
+    WaitInputVx = -1;
+
+    initFont();
+}
+
+bool Emulator::loadROM(const String& filename)
+{
+    reset();
+
+    std::ifstream file(filename, std::ios::binary | std::ios::ate);
+    if (!file) {
+        return false;
+    }
+
+    auto size = file.tellg();
+    file.read((char *)RAM + 0x200, size);
+
+    file.close();
+    
+    return true;
+}
+
 void Emulator::doStep()
 {
-    auto image = _renderer->image();
-    for (size_t i = image.size() - 4; i >= 4; i -= 4) {
-        std::swap(image[i + 0], image[i - 4 + 0]);
-        std::swap(image[i + 1], image[i - 4 + 1]);
-        std::swap(image[i + 2], image[i - 4 + 2]);
-    }
     return;
 
     uint8_t opcode1 = RAM[PC];
@@ -268,6 +291,17 @@ void Emulator::doFrame()
     // for (int i = 0; i < 100; ++i) {
         doStep();
     // }
+
+    // ?
+    // frameReady();
+
+    if (DelayTimer > 0) {
+        --DelayTimer;
+    }
+
+    if (SoundTimer > 0) {
+        --SoundTimer;
+    }
 }
 
 QVulkanWindowRenderer * Emulator::createRenderer()

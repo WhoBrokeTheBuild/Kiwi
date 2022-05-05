@@ -118,8 +118,6 @@ void Renderer::startNextFrame()
 {
     _emulator->frameReady();
     _emulator->requestUpdate();
-
-    _emulator->doFrame();
 }
 
 VkCommandBuffer Renderer::beginOneTimeCommandBuffer()
