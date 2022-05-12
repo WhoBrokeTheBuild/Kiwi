@@ -1,6 +1,9 @@
 #include <Kiwi/Emulator.hpp>
 #include <Kiwi/Log.hpp>
 
+#include <QKeyEvent>
+#include <QCoreApplication>
+
 #include <chrono>
 #include <typeinfo>
 
@@ -10,13 +13,26 @@ using namespace std::chrono_literals;
 
 Emulator::Emulator()
 {
+}
+
+Emulator::~Emulator()
+{
+    stop();
+}
+
+void Emulator::start()
+{
+    if (_running) {
+        return;
+    }
+
     _running = true;
     _thread = std::thread([this]() {
         run();
     });
 }
 
-Emulator::~Emulator()
+void Emulator::stop()
 {
     _running = false;
     _thread.join();
@@ -44,9 +60,13 @@ void Emulator::run()
     }
 }
 
-QVulkanWindowRenderer * Emulator::createRenderer()
+void Emulator::keyPressEvent(QKeyEvent * event)
 {
-    return nullptr;
+    if (_mainWindow) {
+        // TODO: Improve?
+        QKeyEvent * copy = new QKeyEvent(event->type(), event->key(), event->modifiers(), event->text(), event->isAutoRepeat(), event->count());
+        QCoreApplication::postEvent(_mainWindow, copy);
+    }
 }
 
 } // namespace kiwi

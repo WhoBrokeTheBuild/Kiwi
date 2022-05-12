@@ -3,9 +3,10 @@
 #include <Kiwi/Log.hpp>
 #include <Kiwi/Exception.hpp>
 
-#include <QMenuBar>
 #include <QApplication>
+#include <QKeyEvent>
 #include <QLayout>
+#include <QMenuBar>
 #include <QVulkanFunctions>
 
 #include <nlohmann/json.hpp>
@@ -24,8 +25,18 @@
 MainWindow::MainWindow()
     : QMainWindow(nullptr)
 {
+    _menuBar = new AutoHidingMenuBar();
+    setMenuBar(_menuBar);
+    
     QMenu * fileMenu = menuBar()->addMenu("File");
     QMenu * emulatorMenu = fileMenu->addMenu("Emulator");
+    emulatorMenu->addAction("CHIP-8");
+
+    QMenu * viewMenu = menuBar()->addMenu("View");
+    _showMenuBarAction = viewMenu->addAction("Show Menu Bar");
+    _showMenuBarAction->setCheckable(true);
+    _showMenuBarAction->setChecked(true);
+    connect(_showMenuBarAction, SIGNAL(triggered(bool)), this, SLOT(showMenuBarChanged(bool)));
 
     _vkInstance.setExtensions(
         QByteArrayList()
@@ -83,15 +94,17 @@ void MainWindow::loadEmulator(const String& name)
     #endif
 
     if (!_emulatorDefinition->CreateEmulator) {
-        throw RuntimeError("Failed to load emulator '{}', no CreateEmulator function", _emulatorDefinition->Name);
+        throw RuntimeError("Failed to load emulator '{}', no CreateEmulator function found", _emulatorDefinition->Name);
     }
 
     Log(KIWI_ANCHOR, "Loading emulator '{}'", _emulatorDefinition->Name);
 
     _emulator = _emulatorDefinition->CreateEmulator();
+    _emulator->setMainWindow(this);
     _emulator->setVulkanInstance(&_vkInstance);
+    _emulator->start();
 
-    setCentralWidget(QWidget::createWindowContainer(_emulator));
+    setCentralWidget(QWidget::createWindowContainer(_emulator, this));
 
     resize(_emulator->initialSize() + QSize(0, menuBar()->height()));
 
@@ -121,4 +134,19 @@ void MainWindow::freeEmulator()
     _emulatorDefinition = nullptr;
     
     layout()->removeWidget(centralWidget());
+}
+
+void MainWindow::showMenuBarChanged(bool checked)
+{
+    _menuBar->setAutoHiding(!checked);
+}
+
+void MainWindow::keyPressEvent(QKeyEvent * event)
+{
+    if (event->key() == Qt::Key_Alt) {
+        Log(KIWI_ANCHOR, "Alt?");
+
+        _menuBar->altPressed();
+
+    }
 }

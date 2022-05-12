@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAINWINDOW_HPP
+#define MAINWINDOW_HPP
 
 #include <Kiwi/Config.hpp>
 #include <Kiwi/Containers.hpp>
@@ -8,6 +8,8 @@
 
 #include <QMainWindow>
 #include <QVulkanWindow>
+
+#include "autohidingmenubar.hpp"
 
 using namespace kiwi;
 
@@ -35,6 +37,14 @@ public:
 
     void freeEmulator();
 
+private slots:
+
+    void showMenuBarChanged(bool checked);
+
+protected:
+
+    void keyPressEvent(QKeyEvent * event) override;
+
 private:
 
     QVulkanInstance _vkInstance;
@@ -44,7 +54,11 @@ private:
     LibraryHandle _emulatorLibrary = nullptr;
 
     EmulatorDefinition * _emulatorDefinition = nullptr;
+
+    AutoHidingMenuBar * _menuBar = nullptr;
     
+    QAction * _showMenuBarAction = nullptr;
+
 };
 
-#endif // MAINWINDOW_H
+#endif // MAINWINDOW_HPP

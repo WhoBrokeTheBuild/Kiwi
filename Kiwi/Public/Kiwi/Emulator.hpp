@@ -6,6 +6,7 @@
 #include <Kiwi/String.hpp>
 
 #include <QVulkanWindow>
+#include <QMainWindow>
 
 #include <atomic>
 #include <thread>
@@ -20,9 +21,19 @@ public:
 
     virtual ~Emulator();
 
-    virtual bool loadROM(const String& filename) = 0;
+    virtual void start();
 
-    virtual void run();
+    virtual void stop();
+
+    void setMainWindow(QMainWindow * mainWindow) {
+        _mainWindow = mainWindow;
+    }
+
+    QMainWindow * mainWindow() const {
+        return _mainWindow;
+    }
+
+    virtual bool loadROM(const String& filename) = 0;
 
     virtual void doFrame() = 0;
 
@@ -36,7 +47,11 @@ public:
 
 protected:
 
-    virtual QVulkanWindowRenderer * createRenderer() = 0;
+    virtual void run();
+
+    void keyPressEvent(QKeyEvent * event) override;
+
+    QMainWindow * _mainWindow = nullptr;
 
     std::thread _thread;
 

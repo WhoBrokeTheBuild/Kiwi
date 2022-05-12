@@ -14,14 +14,6 @@ Emulator::Emulator()
     setFlags(QVulkanWindow::Flag::PersistentResources);
 
     reset();
-
-    // Test image data
-    auto image = _renderer->image();
-    for (size_t i = 0; i < image.size(); i += 4) {
-        image[i + 0] = rand() % 256;
-        image[i + 1] = rand() % 256;
-        image[i + 2] = rand() % 256;
-    }
 }
 
 Emulator::~Emulator()
@@ -288,6 +280,10 @@ void Emulator::doStep()
 
 void Emulator::doFrame()
 {
+    if (!_renderer) {
+        return;
+    }
+
     // for (int i = 0; i < 100; ++i) {
         doStep();
     // }
@@ -302,6 +298,20 @@ void Emulator::doFrame()
     if (SoundTimer > 0) {
         --SoundTimer;
     }
+
+    static uint8_t color = 0;
+    
+    // Test image data
+    auto image = _renderer->image();
+    for (size_t i = 0; i < image.size(); i += 4) {
+        image[i + 0] = color;
+        image[i + 1] = color;
+        image[i + 2] = color;
+    }
+
+    color = (color + 1) % 255;
+
+    _renderer->nextImage();
 }
 
 QVulkanWindowRenderer * Emulator::createRenderer()

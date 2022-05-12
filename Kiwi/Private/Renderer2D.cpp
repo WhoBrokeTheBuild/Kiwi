@@ -7,23 +7,36 @@ namespace kiwi {
 #include "Render2D.vert.spv.hpp"
 #include "Render2D.frag.spv.hpp"
 
-Renderer2D::Renderer2D(Emulator * emulator, Vec2u imageSize)
+Renderer2D::Renderer2D(Emulator * emulator, Vec2u size, unsigned count /*= 2*/)
     : Renderer(emulator)
-    , _imageSize(imageSize)
+    , _imageCount(count)
+    , _imageSize(size)
 {
-    _image.resize(_imageSize.x * _imageSize.y * _components);
+    assert(_imageCount > 0);
+    
+    size_t imageBufferSize = _imageSize.x * _imageSize.y * _components;
 
-    // Set image to black
-    memset(_image.data(), 0, _image.size());
+    for (unsigned i = 0; i < _imageCount; ++i) {
+        _imageList.push_back(List<uint8_t>(imageBufferSize));
 
-    // Set alpha values to opaque
-    for (size_t i = 3; i < _image.size(); i += 4) {
-        _image[i] = 0xFF;
+        auto& image = _imageList.back();
+
+        // Set image to black
+        memset(image.data(), 0, image.size());
+
+        // Set alpha values to opaque
+        for (size_t i = 3; i < image.size(); i += 4) {
+            image[i] = 0xFF;
+        }
     }
+
+    Log(KIWI_ANCHOR, "Renderer2D::ctor()");
 }
 
 void Renderer2D::initResources()
 {
+    Log(KIWI_ANCHOR, "Renderer2D::initResources()");
+
     Renderer::initResources();
     
     VkResult vkResult;
@@ -34,7 +47,7 @@ void Renderer2D::initResources()
 
     VkBufferCreateInfo imageBufferCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = _image.size(),
+        .size = image().size(),
         .usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
     };
@@ -506,6 +519,8 @@ void Renderer2D::releaseSwapChainResources()
 
 void Renderer2D::releaseResources()
 {
+    Log(KIWI_ANCHOR, "Renderer2D::releaseResources()");
+
     if (_vkPipeline) {
         _vkDeviceFuncs->vkDestroyPipeline(_vkDevice, _vkPipeline, nullptr);
         _vkPipeline = nullptr;
@@ -587,7 +602,7 @@ void Renderer2D::startNextFrame()
 {
     VkCommandBuffer commandBuffer = _emulator->currentCommandBuffer();
 
-    memcpy(_imageBufferData, _image.data(), _image.size());
+    memcpy(_imageBufferData, image().data(), image().size());
 
     VkImageMemoryBarrier imageMemoryBarrier = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -753,6 +768,11 @@ void Renderer2D::startNextFrame()
     _vkDeviceFuncs->vkCmdEndRenderPass(commandBuffer);
 
     Renderer::startNextFrame();
+}
+
+void Renderer2D::nextImage()
+{
+    _imageIndex = (_imageIndex + 1) % _imageCount;
 }
 
 } // namespace kiwi

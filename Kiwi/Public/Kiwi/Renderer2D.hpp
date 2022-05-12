@@ -12,7 +12,7 @@ class KIWI_API Renderer2D : public Renderer
 {
 public:
 
-    Renderer2D(Emulator * emulator, Vec2u size);
+    Renderer2D(Emulator * emulator, Vec2u size, unsigned count = 2);
     
     void initResources() override;
 
@@ -24,8 +24,10 @@ public:
 
     void startNextFrame() override;
 
+    void nextImage();
+
     inline Span<uint8_t> image() {
-        return _image;
+        return _imageList[_imageIndex];
     }
 
     inline Vec2u imageSize() const {
@@ -34,9 +36,13 @@ public:
 
 protected:
 
-    List<uint8_t> _image;
+    unsigned _imageCount;
+
+    unsigned _imageIndex = 0;
 
     Vec2u _imageSize;
+
+    List<List<uint8_t>> _imageList;
 
     const unsigned _components = 4; // RGBA
 
