@@ -1,0 +1,23 @@
+
+NOP             | $EA
+
+LDA u8          | $A9 [0]
+LDA (u8)        | $A5 [0]
+LDA (u8),X      | $B5 [0]
+LDA (u16)       | $AD [0]
+LDA (u16),X     | $BD [0]
+LDA (u16),Y     | $B9 [0]
+LDA (u16,X)     | $ [0]
+LDA (u16),Y     | $ [0]
+
+LDX u8          | $A2 [0]
+LDX (u8)        | $A6 [0]
+LDX (u8),Y      | $B6 [0]
+LDX (u16)       | $AE [0]
+LDX (u16),Y     | $BE [0]
+
+LDY u8          | $A0 [0]
+LDY (u8)        | $A4 [0]
+LDY (u8),X      | $B4 [0]
+LDY (u16)       | $AC [0]
+LDY (u16),X     | $BC [0]

@@ -7,8 +7,12 @@ MACRO(DEFINE_EMULATOR _target)
         ${_target}
         PROPERTIES
             OUTPUT_NAME "Kiwi${_target}"
-    )
     
+            AUTOMOC ON # Qt Meta-Object Compiler
+            AUTORCC ON # Qt Resource Compiler
+            AUTOUIC ON # Qt UI Compiler
+    )
+
     CONFIGURE_LIBRARY(${_target})
 
     TARGET_LINK_LIBRARIES(
@@ -23,12 +27,6 @@ MACRO(DEFINE_EMULATOR _target)
         CACHE INTERNAL ""
     )
 
-    SET(KIWI_RUNTIME_PATH_LIST
-        ${KIWI_RUNTIME_PATH_LIST}
-        ${CMAKE_CURRENT_BINARY_DIR}
-        CACHE INTERNAL ""
-    )
-
 ENDMACRO()
 
 ###
@@ -37,6 +35,6 @@ ENDMACRO()
 
 UNSET(KIWI_EMULATOR_TARGET_LIST CACHE)
 
-ADD_SUBDIRECTORY(CHIP-8)
+# ADD_SUBDIRECTORY(CHIP-8)
 ADD_SUBDIRECTORY(GameBoy)
 ADD_SUBDIRECTORY(NES)

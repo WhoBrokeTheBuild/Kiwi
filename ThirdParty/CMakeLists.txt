@@ -13,6 +13,7 @@ IF(NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     SET(fmt_ROOT ${_binary_dir}/fmt PARENT_SCOPE)
     SET(nlohmann_json_ROOT ${_binary_dir}/nlohmann_json PARENT_SCOPE)
     SET(cflags_ROOT ${_binary_dir}/cflags PARENT_SCOPE)
+    SET(SDL2_ROOT ${_binary_dir}/SDL2 PARENT_SCOPE)
 
     # Set CMAKE_PREFIX_PATH for find-based packages
     LIST(APPEND CMAKE_PREFIX_PATH
@@ -185,6 +186,34 @@ ELSE()
             UPDATE_COMMAND      ""
             TEST_COMMAND        ""
             INSTALL_COMMAND     ${CMAKE_COMMAND} --build . --target install --config ${CMAKE_BUILD_TYPE}
+        )
+    ENDIF()
+
+    ###
+    ### SDL2
+    ###
+    
+    SET(SDL2_ROOT       ${CMAKE_BINARY_DIR}/SDL2)
+    SET(SDL2_SOURCE_DIR ${CMAKE_BINARY_DIR}/SDL2_src)
+    SET(SDL2_BINARY_DIR ${CMAKE_BINARY_DIR}/SDL2_bin)
+
+    # Versions prior to 2.0.6 didn't support CMake namespaces
+    FIND_PACKAGE(SDL2 2.0.6 CONFIG QUIET)
+
+    IF(NOT SDL2_FOUND)
+        ExternalProject_Add(
+            ThirdParty_SDL2
+            URL                 "https://www.libsdl.org/release/SDL2-2.0.22.tar.gz"
+            URL_HASH            MD5=40aedb499cb2b6f106d909d9d97f869a
+            SOURCE_DIR          ${SDL2_SOURCE_DIR}
+            BINARY_DIR          ${SDL2_BINARY_DIR}
+            CMAKE_ARGS          -DCMAKE_INSTALL_PREFIX=${SDL2_ROOT}
+                                -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                                -DBUILD_SHARED_LIBS=ON
+            BUILD_COMMAND       ""
+            UPDATE_COMMAND      ""
+            TEST_COMMAND        ""
+            INSTALL_COMMAND     ${CMAKE_COMMAND} --build . --target install
         )
     ENDIF()
 

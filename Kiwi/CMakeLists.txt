@@ -1,5 +1,5 @@
 
-SET(_target Kiwi)
+SET(_library_target Kiwi)
 
 ###
 ### Shader Processing
@@ -29,35 +29,34 @@ GENERATE_ASSET_INCLUDE_LIST("KIWI" "${_shader_output_list}" _shader_output_inclu
 ### Target Configuration
 ###
 
-ADD_LIBRARY(${_target} SHARED "")
+ADD_LIBRARY(${_library_target} SHARED "")
 
-CONFIGURE_LIBRARY(${_target})
+CONFIGURE_LIBRARY(${_library_target})
 
 TARGET_SOURCES(
-    ${_target}
+    ${_library_target}
     PRIVATE
         ${_shader_output_include_list}
 )
 
 TARGET_INCLUDE_DIRECTORIES(
-    ${_target}
+    ${_library_target}
     PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}/Assets
 )
 
 TARGET_LINK_LIBRARIES(
-    ${_target}
+    ${_library_target}
     PUBLIC
-        glm::glm
-        fmt::fmt
-        nlohmann_json::nlohmann_json
-        cflags::cppflags
+        KiwiUtility
+
         Qt6::Widgets
+        SDL2::SDL2
         ${CMAKE_DL_LIBS}
 )
 
 SET_TARGET_PROPERTIES(
-    ${_target}
+    ${_library_target}
     PROPERTIES
         DEFINE_SYMBOL "KIWI_EXPORT"
 
@@ -66,8 +65,35 @@ SET_TARGET_PROPERTIES(
         AUTOUIC ON # Qt UI Compiler
 )
 
-SET(KIWI_RUNTIME_PATH_LIST
-    ${KIWI_RUNTIME_PATH_LIST}
-    ${CMAKE_CURRENT_BINARY_DIR}
-    CACHE INTERNAL ""
+###
+### Executable Configuration
+###
+
+SET(_executable_target KiwiGUI)
+
+FILE(
+    GLOB_RECURSE
+    _source_list
+    "Source/*.h"
+    "Source/*.hpp"
+    "Source/*.c"
+    "Source/*.cpp"
+)
+
+ADD_EXECUTABLE(
+    ${_executable_target}
+    ${_source_list}
+)
+
+SET_TARGET_PROPERTIES(
+    ${_executable_target}
+    PROPERTIES
+        OUTPUT_NAME "Kiwi"
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
+TARGET_LINK_LIBRARIES(
+    ${_executable_target}
+    PUBLIC
+        Kiwi
 )

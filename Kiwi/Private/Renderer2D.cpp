@@ -1,14 +1,14 @@
 #include <Kiwi/Renderer2D.hpp>
-#include <Kiwi/Emulator.hpp>
-#include <Kiwi/Exception.hpp>
+#include <Kiwi/IEmulator.hpp>
+#include <Kiwi/Utility/Exception.hpp>
 
 namespace kiwi {
 
 #include "Render2D.vert.spv.hpp"
 #include "Render2D.frag.spv.hpp"
 
-Renderer2D::Renderer2D(Emulator * emulator, Vec2u size, unsigned count /*= 2*/)
-    : Renderer(emulator)
+Renderer2D::Renderer2D(IEmulator * emulator, Vec2u size, unsigned count /*= 2*/)
+    : IRenderer(emulator)
     , _imageCount(count)
     , _imageSize(size)
 {
@@ -37,7 +37,7 @@ void Renderer2D::initResources()
 {
     Log(KIWI_ANCHOR, "Renderer2D::initResources()");
 
-    Renderer::initResources();
+    IRenderer::initResources();
     
     VkResult vkResult;
 
@@ -505,7 +505,7 @@ void Renderer2D::initResources()
 
 void Renderer2D::initSwapChainResources()
 {
-    Renderer::initSwapChainResources();
+    IRenderer::initSwapChainResources();
 
 
 }
@@ -514,7 +514,7 @@ void Renderer2D::releaseSwapChainResources()
 {
 
 
-    Renderer::releaseSwapChainResources();
+    IRenderer::releaseSwapChainResources();
 }
 
 void Renderer2D::releaseResources()
@@ -595,7 +595,7 @@ void Renderer2D::releaseResources()
         _vkImage = nullptr;
     }
 
-    Renderer::releaseResources();
+    IRenderer::releaseResources();
 }
 
 void Renderer2D::startNextFrame()
@@ -767,7 +767,7 @@ void Renderer2D::startNextFrame()
 
     _vkDeviceFuncs->vkCmdEndRenderPass(commandBuffer);
 
-    Renderer::startNextFrame();
+    IRenderer::startNextFrame();
 }
 
 void Renderer2D::nextImage()

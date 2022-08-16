@@ -1,0 +1,24 @@
+#ifndef KIWI_Version_HPP
+#define KIWI_Version_HPP
+
+#define KIWI_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+#define KIWI_VERSION_MINOR @PROJECT_VERSION_MINOR@
+#define KIWI_VERSION_PATCH @PROJECT_VERSION_PATCH@
+
+#define _KIWI_VERSION_NUMBER(MAJOR, MINOR, PATCH) \
+    (((MAJOR << 16) | (MINOR << 8) | PATCH))
+
+///
+/// Combined version number used for preprocessor comparisons
+///
+#define KIWI_VERSION \
+    _KIWI_VERSION_NUMBER(KIWI_VERSION_MAJOR, KIWI_VERSION_MINOR, KIWI_VERSION_PATCH)
+
+///
+/// Version string in the form of MAJOR.MINOR.PATCH
+///
+#define KIWI_VERSION_STRING "@PROJECT_VERSION@"
+
+#define KIWI_GIT_HASH "@PROJECT_VERSION_GIT_HASH@"
+
+#endif // KIWI_Version_HPP

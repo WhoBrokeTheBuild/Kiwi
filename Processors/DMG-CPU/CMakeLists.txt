@@ -1,4 +1,4 @@
 
-SET(_target MOS6502)
+SET(_target DMG-CPU)
 
 DEFINE_CHIP(${_target} STATIC)

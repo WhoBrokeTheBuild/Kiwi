@@ -86,6 +86,12 @@ MACRO(CONFIGURE_LIBRARY _target)
             $<$<CXX_COMPILER_ID:MSVC>:  /wd4068>
     )
 
+    SET_TARGET_PROPERTIES(
+        ${_target}
+        PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
+
     ###
     ### Tests
     ###
@@ -118,23 +124,24 @@ MACRO(CONFIGURE_LIBRARY _target)
                 COMMAND $<TARGET_FILE:${_test_target}>
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Tests
             )
-
-            ADD_LAUNCH_TARGET(
-                "Test ${_target}-${_stem}"
-                ${CMAKE_CURRENT_SOURCE_DIR}/Tests
-                $<TARGET_FILE:${_test_target}>
-            )
             
             IF(WIN32)
-                STRING(REPLACE ";" "\\\\;" _env "PATH=${KIWI_RUNTIME_PATH};$ENV{PATH}")
+                STRING(REPLACE ";" "\\\\;" _env "PATH=${KIWI_RUNTIME_PATH_LIST};$ENV{PATH}")
             ELSE()
-                STRING(REPLACE ";" ":" _env "LD_LIBRARY_PATH=${KIWI_RUNTIME_PATH}")
+                STRING(REPLACE ";" ":" _env "LD_LIBRARY_PATH=${KIWI_RUNTIME_PATH_LIST}")
             ENDIF()
 
             SET_TESTS_PROPERTIES(
                 ${_test_target}
                 PROPERTIES
                     ENVIRONMENT ${_env}
+            )
+
+            ADD_LAUNCH_TARGET(
+                "Kiwi Test ${_test_target}"
+                ${CMAKE_CURRENT_SOURCE_DIR}/Tests
+                $<TARGET_FILE:${_test_target}>
+                "--verbose"
             )
 
         ENDFOREACH()
