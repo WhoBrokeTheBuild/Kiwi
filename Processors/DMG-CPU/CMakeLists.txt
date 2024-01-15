@@ -1,4 +1,4 @@
 
-SET(_target DMG-CPU)
+set(_target DMG-CPU)
 
-DEFINE_CHIP(${_target} STATIC)
+kiwi_define_processor(${_target})

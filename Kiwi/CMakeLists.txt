@@ -1,51 +1,52 @@
 
-SET(_library_target Kiwi)
+set(_library_target Kiwi)
 
 ###
 ### Shader Processing
 ###
 
-SET(KIWI_SHADER_INCLUDE_PATH
+set(KIWI_SHADER_INCLUDE_PATH
     ${CMAKE_CURRENT_SOURCE_DIR}/Assets
     ${KIWI_SHADER_INCLUDE_PATH}
     CACHE INTERNAL ""
 )
 
-FILE(
+file(
     GLOB_RECURSE
     _shader_input_list
     "Assets/*.glsl"
 )
 
-INCLUDE(CompileShaderList)
+include(KiwiCompileShaderList)
 
-COMPILE_SHADER_LIST("${KIWI_SHADER_INCLUDE_PATH}" "${_shader_input_list}" _shader_output_list)
+kiwi_compile_shader_list("${KIWI_SHADER_INCLUDE_PATH}" "${_shader_input_list}" _shader_output_list)
 
-INCLUDE(GenerateAssetIncludeList)
+include(KiwiGenerateAssetIncludeList)
 
-GENERATE_ASSET_INCLUDE_LIST("KIWI" "${_shader_output_list}" _shader_output_include_list)
+kiwi_generate_asset_include_list("KIWI" "${_shader_output_list}" _shader_output_include_list)
 
 ###
 ### Target Configuration
 ###
 
-ADD_LIBRARY(${_library_target} SHARED "")
+add_library(${_library_target} SHARED "")
 
-CONFIGURE_LIBRARY(${_library_target})
+kiwi_configure_library(${_library_target})
 
-TARGET_SOURCES(
+target_sources(
     ${_library_target}
     PRIVATE
         ${_shader_output_include_list}
 )
 
-TARGET_INCLUDE_DIRECTORIES(
+target_include_directories(
     ${_library_target}
     PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/Public/Kiwi/Widgets
         ${CMAKE_CURRENT_BINARY_DIR}/Assets
 )
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     ${_library_target}
     PUBLIC
         KiwiUtility
@@ -55,7 +56,7 @@ TARGET_LINK_LIBRARIES(
         ${CMAKE_DL_LIBS}
 )
 
-SET_TARGET_PROPERTIES(
+set_target_properties(
     ${_library_target}
     PROPERTIES
         DEFINE_SYMBOL "KIWI_EXPORT"
@@ -69,9 +70,9 @@ SET_TARGET_PROPERTIES(
 ### Executable Configuration
 ###
 
-SET(_executable_target KiwiGUI)
+set(_executable_target KiwiGUI)
 
-FILE(
+file(
     GLOB_RECURSE
     _source_list
     "Source/*.h"
@@ -80,19 +81,19 @@ FILE(
     "Source/*.cpp"
 )
 
-ADD_EXECUTABLE(
+add_executable(
     ${_executable_target}
     ${_source_list}
 )
 
-SET_TARGET_PROPERTIES(
+set_target_properties(
     ${_executable_target}
     PROPERTIES
         OUTPUT_NAME "Kiwi"
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     ${_executable_target}
     PUBLIC
         Kiwi

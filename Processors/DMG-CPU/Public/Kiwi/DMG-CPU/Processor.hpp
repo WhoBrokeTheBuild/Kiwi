@@ -21,6 +21,9 @@ public:
     /// General
     ///
 
+    // Output Pixel Data
+    uint8_t LCD[SCREEN_BUFFER_SIZE];
+
     // Output Volume (0.0 - 1.0)
     float Volume;
 
@@ -41,6 +44,39 @@ public:
 
     // $FF50 Controls whether $0000-$0100 will map to BootstrapROM or CartridgeROM[0]
     bool BootstrapEnabled;
+    
+    // $8000-$9FFF Video RAM
+    uint8_t VideoRAM[VIDEO_RAM_BANK_COUNT][VIDEO_RAM_BANK_SIZE];
+
+    //
+    int VideoRAMBank;
+
+    // $FE00-$FE9F Object Attribute Memory
+    uint8_t OAM[OAM_SIZE];
+
+    // $0000-$3FFF Cartridge ROM Bank 0
+    // $4000-$7FFF Cartridge ROM Switchable
+    uint8_t (*CartridgeROM)[CARTRIDGE_ROM_BANK_SIZE] = nullptr;
+
+    // MBC-controlled Cartridge ROM Bank index for $4000-$7FFF
+    unsigned CartridgeROMBank;
+
+    // $A000-$BFFF Cartridge Static RAM
+    uint8_t StaticRAM[STATIC_RAM_BANK_COUNT][STATIC_RAM_BANK_SIZE];
+
+    // MBC-controlled Cartridge Static RAM Bank index for $A000-$BFFF
+    unsigned StaticRAMBank;
+
+    // $C000-$CFFF Work RAM Bank 0 (Echo at $E000-$EFFF)
+    // $C000-$CFFF Work RAM Switchable (Echo at $F000-$FDFF)
+    uint8_t WorkRAM[WORK_RAM_BANK_COUNT][WORK_RAM_BANK_SIZE];
+
+    // 
+    unsigned WorkRAMBank;
+
+    // $FF80-$FFFE High RAM / Zero Page
+    uint8_t HighRAM[HIGH_RAM_SIZE];
+
 
     ///
     /// Registers
@@ -128,84 +164,65 @@ public:
     // Enable IME after the next instruction
     bool RequestIME;
 
+    ///
+    /// Hardware I/O Registers
+    ///
+
     // $FF0F Requested Interrupts
     InterruptFlags IF;
 
     // $FFFE Enabled Interrupts
     InterruptFlags IE;
 
-    ///
-    /// PPU
-    ///
-
-    // Scroll Y
+    // $FF42 Scroll Y
     uint8_t SCY;
 
-    // Scroll X
+    // $FF43 Scroll X
     uint8_t SCX;
 
-    // Line
+    // $FF44 Current Line
     uint8_t LY;
 
-    // Line Coincidence
+    // $FF45 Line Coincidence
     uint8_t LYC;
-
-    // Window X
-    uint8_t WX;
     
-    // Window Y
+    // $FF4A Window Y
     uint8_t WY;
 
-    // $8000-$9FFF Video RAM
-    uint8_t VideoRAM[VIDEO_RAM_BANK_COUNT][VIDEO_RAM_BANK_SIZE];
+    // $FF4B Window X
+    uint8_t WX;
 
-    // $FE00-$FE9F Object Attribute Memory
-    uint8_t OAM[OAM_SIZE];
+    // $FF47 Background palette
+    Palette BGP;
 
-    // $0000-$3FFF Cartridge ROM Bank 0
-    // $4000-$7FFF Cartridge ROM Switchable
-    uint8_t (*CartridgeROM)[CARTRIDGE_ROM_BANK_SIZE] = nullptr;
+    // $FF48 Sprite palette 0
+    Palette OBP0;
 
-    // MBC-controlled Cartridge ROM Bank index for $4000-$7FFF
-    unsigned CartridgeROMBank;
-
-    // $A000-$BFFF Cartridge Static RAM
-    uint8_t StaticRAM[STATIC_RAM_BANK_COUNT][STATIC_RAM_BANK_SIZE];
-
-    // MBC-controlled Cartridge Static RAM Bank index for $A000-$BFFF
-    unsigned StaticRAMBank;
-
-    // $C000-$CFFF Work RAM Bank 0 (Echo at $E000-$EFFF)
-    // $C000-$CFFF Work RAM Switchable (Echo at $F000-$FDFF)
-    uint8_t WorkRAM[WORK_RAM_BANK_COUNT][WORK_RAM_BANK_SIZE];
-
-    // $FF80-$FFFE High RAM / Zero Page
-    uint8_t HighRAM[HIGH_RAM_SIZE];
-
-    unsigned WRAMBank;
+    // $FF49 Sprite palette 1
+    Palette OBP1;
 
     union {
         struct {
-            uint8_t : 4;
-            bool SelectAction : 1;
-            bool SelectDirection : 1;
-            uint8_t : 2;
+            uint8_t                 : 4;
+            bool SelectAction       : 1;
+            bool SelectDirection    : 1;
+            uint8_t                 : 2;
         };
 
         struct {
-            bool Right : 1;
-            bool Left : 1;
-            bool Up : 1;
-            bool Down : 1;
-            uint8_t : 4;
+            bool Right              : 1;
+            bool Left               : 1;
+            bool Up                 : 1;
+            bool Down               : 1;
+            uint8_t                 : 4;
         };
 
         struct {
-            bool A : 1;
-            bool B : 1;
-            bool Select : 1;
-            bool Start : 1;
-            uint8_t : 4;
+            bool A                  : 1;
+            bool B                  : 1;
+            bool Select             : 1;
+            bool Start              : 1;
+            uint8_t                 : 4;
         };
 
         uint8_t raw;
@@ -224,17 +241,24 @@ public:
     // $FF07 Timer Control
     TimerControl TAC;
 
+    // $FF40 LCD Control
     union {
         struct {
-            bool TileDisplayEnable:1;
-            bool SpriteDisplayEnable:1;
-            uint8_t SpriteSize:1;
+            bool TileDisplayEnable      : 1;
+            bool SpriteDisplayEnable    : 1;
+            uint8_t SpriteSize          : 1;
+            uint8_t BGTileMapSelect     : 1;
+            uint8_t TileDataSelect      : 1;
+            bool WindowEnable           : 1;
+            uint8_t WindowTileMapSelect : 1;
+            bool Enable                 : 1;
         };
 
         uint8_t raw;
 
     } LCDC;
 
+    // $FF41 LCD Status
     union {
         KIWI_PACK(
             struct {
@@ -266,6 +290,8 @@ public:
 
 private:
 
+    unsigned _lineTicks = 0;
+
     void checkInterrupts();
 
     void tickCPU();
@@ -292,8 +318,8 @@ private:
 
     KIWI_FORCE_INLINE
     uint16_t popWord() {
-        uint8_t lower = readByte(SP++);
-        return lower | (readByte(SP++) << 8);
+        uint8_t lower = readByte(++SP);
+        return lower | (readByte(++SP) << 8);
     }
 
     KIWI_FORCE_INLINE

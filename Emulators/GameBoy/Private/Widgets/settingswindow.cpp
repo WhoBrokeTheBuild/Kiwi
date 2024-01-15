@@ -36,10 +36,12 @@ void SettingsWindow::load()
 
     if (data.contains("defaultROMDirectory")) {
         _defaultROMDirectory = QString::fromStdString(data["defaultROMDirectory"].get<std::string>());
+        _ui->txtDefaultROMDirectory->setText(_defaultROMDirectory);
     }
 
     if (data.contains("bootstrapROM")) {
         _bootstrapROM = QString::fromStdString(data["bootstrapROM"].get<std::string>());
+        _ui->txtBootstrapROM->setText(_bootstrapROM);
     }
 }
 
@@ -87,7 +89,7 @@ void SettingsWindow::btnBootstrapROMTriggered()
         _ui->txtBootstrapROM->setText(filename);
 
         // try {
-        //     DMG_CPU.loadBootstrapROM(filename.toStdString());
+            // DMG_CPU.loadBootstrapROM(filename.toStdString());
         // }
         // catch (const RuntimeError& e) {
         //     QMessageBox::critical(
@@ -97,16 +99,6 @@ void SettingsWindow::btnBootstrapROMTriggered()
         //         QMessageBox::Ok
         //     );
         // }
-    }
-
-    auto path = QFileDialog::getExistingDirectory(
-        this,
-        "Choose Default ROM Directory",
-        _ui->txtDefaultROMDirectory->text()
-    );
-
-    if (!path.isEmpty()) {
-        _ui->txtDefaultROMDirectory->setText(path);
     }
 }
 

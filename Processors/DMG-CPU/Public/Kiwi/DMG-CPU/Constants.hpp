@@ -50,7 +50,7 @@ inline const unsigned SCREEN_WIDTH = 160;
 inline const unsigned SCREEN_HEIGHT = 144;
 
 // Screen Buffer Components (RGB)
-inline const unsigned SCREEN_BUFFER_COMPONENTS = 3;
+inline const unsigned SCREEN_BUFFER_COMPONENTS = 4;
 
 // Size of Screen Buffer in Bytes
 inline const unsigned SCREEN_BUFFER_SIZE = (SCREEN_WIDTH * SCREEN_HEIGHT * SCREEN_BUFFER_COMPONENTS);
@@ -75,6 +75,27 @@ inline const unsigned STAT_MODE_SEARCH_SPRITE = 0b10;
 
 // Reading OAM and VRAM to generate pixels
 inline const unsigned STAT_MODE_DATA_TRANSFER = 0b11;
+
+// Regions for accessing tile maps
+inline const unsigned TILE_MAP_ADDRESS[] = {
+    0x9800, // $9800 - $9BFF
+    0x9C00, // $9C00 - $9FFF
+};
+
+// Regions for accessing tile data
+inline const unsigned TILE_DATA_ADDRESS[] = {
+    0x9000, // $8800 - $97FF
+    0x8000, // $8000 - $8FFF
+};
+
+inline const unsigned TILE_WIDTH = 8;
+
+inline const unsigned TILE_HEIGHT = 8;
+
+inline const unsigned TILES_PER_ROW = 2;
+
+inline const unsigned TILE_DATA_SIZE = 6;
+
 
 } // namespace DMG_CPU
 } // namespace kiwi

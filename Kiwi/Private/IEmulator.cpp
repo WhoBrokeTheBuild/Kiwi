@@ -47,7 +47,7 @@ void IEmulator::run()
 
     while (_isThreadRunning) {
         auto before = std::chrono::high_resolution_clock::now();
-
+        
         if (_isPlaying) {
             doFrame();
         }

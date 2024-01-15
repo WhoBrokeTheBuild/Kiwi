@@ -45,7 +45,7 @@ void LogMessage(StringView tag, StringView message);
 ///
 template <typename... Args>
 KIWI_FORCE_INLINE void Log(StringView tag, StringView format, Args&&... args) {
-    LogMessage(tag, fmt::vformat(format, fmt::make_format_args(std::forward<Args>(args)...)));
+    LogMessage(tag, fmt::vformat(format, fmt::make_format_args(args...)));
 }
 
 } // namespace kiwi

@@ -18,11 +18,11 @@ public:
 
     ~SettingsWindow();
 
-    inline QString defaultROMDirectory() {
+    inline QString defaultROMDirectory() const {
         return _defaultROMDirectory;
     }
 
-    inline QString bootstrapROM() {
+    inline QString bootstrapROM() const {
         return _bootstrapROM;
     }
 

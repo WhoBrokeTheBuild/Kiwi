@@ -21,7 +21,7 @@ namespace kiwi {
 #endif
 
 class IEmulator;
-class EmulatorDefinition;
+struct EmulatorDefinition;
 
 class KIWI_API MainWindow : public QMainWindow
 {

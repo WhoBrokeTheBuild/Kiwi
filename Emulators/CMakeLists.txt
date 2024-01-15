@@ -1,9 +1,9 @@
 
-MACRO(DEFINE_EMULATOR _target)
+macro(kiwi_define_emulator _target)
     
-    ADD_LIBRARY(${_target} SHARED "")
+    add_library(${_target} SHARED "")
 
-    SET_TARGET_PROPERTIES(
+    set_target_properties(
         ${_target}
         PROPERTIES
             OUTPUT_NAME "Kiwi${_target}"
@@ -13,28 +13,28 @@ MACRO(DEFINE_EMULATOR _target)
             AUTOUIC ON # Qt UI Compiler
     )
 
-    CONFIGURE_LIBRARY(${_target})
+    kiwi_configure_library(${_target})
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         ${_target}
         PUBLIC
             Kiwi
     )
 
-    SET(KIWI_EMULATOR_TARGET_LIST
+    set(KIWI_EMULATOR_TARGET_LIST
         ${KIWI_EMULATOR_TARGET_LIST}
         ${_target}
         CACHE INTERNAL ""
     )
 
-ENDMACRO()
+endmacro()
 
 ###
 ### Emulator Libraries & Targets
 ###
 
-UNSET(KIWI_EMULATOR_TARGET_LIST CACHE)
+unset(KIWI_EMULATOR_TARGET_LIST CACHE)
 
-# ADD_SUBDIRECTORY(CHIP-8)
-ADD_SUBDIRECTORY(GameBoy)
-ADD_SUBDIRECTORY(NES)
+# add_subdirectory(CHIP-8)
+add_subdirectory(GameBoy)
+# add_subdirectory(NES)

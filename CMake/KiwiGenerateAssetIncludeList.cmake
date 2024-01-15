@@ -21,25 +21,25 @@
 #   #endif // PREFIX_IMAGE_PNG_HPP
 #
 
-MACRO(GENERATE_ASSET_INCLUDE_LIST _guard_prefix _input_list _output_list_variable)
-    FOREACH(_input ${_input_list})
+macro(kiwi_generate_asset_include_list _guard_prefix _input_list _output_list_variable)
+    foreach(_input ${_input_list})
         # Replace leading source directory in path with binary directory
-        STRING(REPLACE 
+        string(REPLACE 
             ${CMAKE_CURRENT_SOURCE_DIR}
             ${CMAKE_CURRENT_BINARY_DIR}
             _output
             ${_input}
         )
 
-        SET(_output "${_input}.hpp")
+        set(_output "${_input}.hpp")
 
-        CMAKE_PATH(GET _input FILENAME _variable)
-        STRING(REPLACE "." "_" _variable "${_variable}")
+        cmake_path(GET _input FILENAME _variable)
+        string(REPLACE "." "_" _variable "${_variable}")
 
-        STRING(TOUPPER "${_variable}" _guard)
-        SET(_guard "${_guard_prefix}_${_guard}_HPP")
+        string(TOUPPER "${_variable}" _guard)
+        set(_guard "${_guard_prefix}_${_guard}_HPP")
 
-        ADD_CUSTOM_COMMAND(
+        add_custom_command(
             MAIN_DEPENDENCY ${_input}
             OUTPUT ${_output}
             COMMAND ${Python3_EXECUTABLE}
@@ -52,6 +52,6 @@ MACRO(GENERATE_ASSET_INCLUDE_LIST _guard_prefix _input_list _output_list_variabl
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         )
 
-        LIST(APPEND ${_output_list_variable} ${_output})
-    ENDFOREACH()
-ENDMACRO()
+        list(APPEND ${_output_list_variable} ${_output})
+    endforeach()
+endmacro()

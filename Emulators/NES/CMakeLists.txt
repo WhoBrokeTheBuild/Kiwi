@@ -1,9 +1,9 @@
 
-SET(_target NES)
+set(_target NES)
 
-DEFINE_EMULATOR(${_target})
+kiwi_define_emulator(${_target})
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     ${_target}
     PUBLIC
         MOS6502

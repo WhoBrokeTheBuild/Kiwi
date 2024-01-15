@@ -35,6 +35,10 @@ public:
         return _imageList[_imageIndex];
     }
 
+    inline Span<uint8_t> backbuffer() {
+        return _imageList[(_imageIndex + 1) % _imageCount];
+    }
+
     inline Vec2u imageSize() const {
         return _imageSize;
     }

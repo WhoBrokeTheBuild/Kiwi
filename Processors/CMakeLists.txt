@@ -1,30 +1,29 @@
 
-MACRO(DEFINE_CHIP _target)
+macro(kiwi_define_processor _target)
         
-    ADD_LIBRARY(${_target} STATIC "")
+    add_library(${_target} STATIC "")
 
-    SET_TARGET_PROPERTIES(
+    set_target_properties(
         ${_target}
         PROPERTIES
             OUTPUT_NAME "Kiwi${_target}"
     )
     
-    CONFIGURE_LIBRARY(${_target})
+    kiwi_configure_library(${_target})
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         ${_target}
         PUBLIC
             Kiwi
     )
 
-ENDMACRO()
+endmacro()
 
 ###
-### Chip Libraries
+### Processor Libraries
 ###
 
-ADD_SUBDIRECTORY(DMG-CPU)
-# ADD_SUBDIRECTORY(CGB-CPU)
-
-ADD_SUBDIRECTORY(MOS6502)
-# ADD_SUBDIRECTORY(RP2A03)
+add_subdirectory(DMG-CPU)
+# add_subdirectory(CGB-CPU)
+add_subdirectory(MOS6502)
+# add_subdirectory(RP2A03)

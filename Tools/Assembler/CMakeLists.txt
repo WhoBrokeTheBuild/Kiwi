@@ -1,7 +1,7 @@
 
-SET(_target KiwiASM)
+set(_target KiwiASM)
 
-FILE(
+file(
     GLOB_RECURSE
     _source_list
     "Source/*.h"
@@ -10,20 +10,14 @@ FILE(
     "Source/*.cpp"
 )
 
-ADD_EXECUTABLE(
+add_executable(
     ${_target}
     ${_source_list}
 )
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     ${_target}
     PRIVATE
         Kiwi
         cflags::cppflags
-)
-
-SET_TARGET_PROPERTIES(
-    ${_target}
-    PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )

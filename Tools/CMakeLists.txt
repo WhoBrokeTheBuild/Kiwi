@@ -1,2 +1,2 @@
 
-ADD_SUBDIRECTORY(Assembler)
+add_subdirectory(Assembler)

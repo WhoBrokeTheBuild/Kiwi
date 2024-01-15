@@ -1,19 +1,19 @@
-#ifndef KIWI_GAMEBOY_EMULATOR_HPP
-#define KIWI_GAMEBOY_EMULATOR_HPP
+#ifndef KIWI_ATARI2600_EMULATOR_HPP
+#define KIWI_ATARI2600_EMULATOR_HPP
 
 #include <Kiwi/Config.hpp>
 #include <Kiwi/IEmulator.hpp>
 #include <Kiwi/Renderer2D.hpp>
 #include <Kiwi/Widgets/mainwindow.h>
 
-#include <Kiwi/DMG-CPU/Processor.hpp>
+#include <Kiwi/MOS6507/Processor.hpp>
 
 #include <QMenu>
 
-#include "Widgets/settingswindow.h"
+// #include "Widgets/settingswindow.h"
 
 namespace kiwi {
-namespace GameBoy {
+namespace Atari2600 {
 
 class Emulator : public IEmulator
 {
@@ -21,7 +21,7 @@ class Emulator : public IEmulator
 
 public:
 
-    DMG_CPU::Processor DMG_CPU;
+    MOS6507::Processor CPU;
 
     Emulator(MainWindow * mainWindow);
 
@@ -42,7 +42,7 @@ public:
     }
 
     QSize initialSize() override {
-        return { DMG_CPU::SCREEN_WIDTH * 6, DMG_CPU::SCREEN_HEIGHT * 6 };
+        return { MOS6502::SCREEN_WIDTH * 6, MOS6502::SCREEN_HEIGHT * 6 };
     }
 
 protected:
@@ -63,11 +63,11 @@ private:
 
     QMenu * _menu = nullptr;
 
-    SettingsWindow * _settingsWindow = nullptr;
+    // SettingsWindow * _settingsWindow = nullptr;
 
 }; // class Emulator
 
 } // namespace GameBoy
 } // namespace kiwi
 
-#endif // KIWI_GAMEBOY_EMULATOR_HPP
+#endif // KIWI_ATARI2600_EMULATOR_HPP

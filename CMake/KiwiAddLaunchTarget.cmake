@@ -5,71 +5,71 @@
 # GENERATE_LAUNCH_TARGET_CONFIG() from the top level CMakeLists.txt.
 #
 
-IF(NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    MESSAGE(FATAL_ERROR "AddLaunchTarget.cmake must be included at the top of your project")
-ENDIF()
+if(NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    message(FATAL_ERROR "AddLaunchTarget.cmake must be included at the top of your project")
+endif()
 
-UNSET(KIWI_LAUNCH_TARGET_NAME_LIST CACHE)
-UNSET(KIWI_LAUNCH_TARGET_WORKING_DIRECTORY_LIST CACHE)
-UNSET(KIWI_LAUNCH_TARGET_EXECUTABLE_LIST CACHE)
-UNSET(KIWI_LAUNCH_TARGET_ARGUMENTS_LIST CACHE)
+unset(KIWI_LAUNCH_TARGET_NAME_LIST CACHE)
+unset(KIWI_LAUNCH_TARGET_WORKING_DIRECTORY_LIST CACHE)
+unset(KIWI_LAUNCH_TARGET_EXECUTABLE_LIST CACHE)
+unset(KIWI_LAUNCH_TARGET_ARGUMENTS_LIST CACHE)
 
-MACRO(ADD_LAUNCH_TARGET _name _workingDir _executable)
+macro(kiwi_add_launch_target _name _workingDir _executable)
 
-    SET(KIWI_LAUNCH_TARGET_NAME_LIST
+    set(KIWI_LAUNCH_TARGET_NAME_LIST
         ${KIWI_LAUNCH_TARGET_NAME_LIST}
         "${_name}"
         CACHE INTERNAL ""
     )
 
-    SET(KIWI_LAUNCH_TARGET_WORKING_DIRECTORY_LIST
+    set(KIWI_LAUNCH_TARGET_WORKING_DIRECTORY_LIST
         ${KIWI_LAUNCH_TARGET_WORKING_DIRECTORY_LIST}
         "${_workingDir}"
         CACHE INTERNAL ""
     )
 
-    SET(KIWI_LAUNCH_TARGET_EXECUTABLE_LIST
+    set(KIWI_LAUNCH_TARGET_EXECUTABLE_LIST
         ${KIWI_LAUNCH_TARGET_EXECUTABLE_LIST}
         "${_executable}"
         CACHE INTERNAL ""
     )
 
-    SET(_arguments "${ARGN}")
-    LIST(JOIN _arguments " " _arguments)
+    set(_arguments "${ARGN}")
+    list(JOIN _arguments " " _arguments)
 
-    SET(KIWI_LAUNCH_TARGET_ARGUMENTS_LIST
+    set(KIWI_LAUNCH_TARGET_ARGUMENTS_LIST
         ${KIWI_LAUNCH_TARGET_ARGUMENTS_LIST}
         "-- ${_arguments}"
         CACHE INTERNAL ""
     )
 
-ENDMACRO()
+endmacro()
 
-FUNCTION(GENERATE_LAUNCH_TARGET_CONFIG)
+function(kiwi_generate_launch_target_config)
 
-    SET(_runtime_path_list "${KIWI_RUNTIME_PATH_LIST}")
+    set(_runtime_path_list "${KIWI_RUNTIME_PATH_LIST}")
 
-    IF(NOT WIN32)
-        LIST(JOIN "${_runtime_path_list}" ":" _runtime_path_list)
-    ENDIF()
+    if(NOT WIN32)
+        list(JOIN "${_runtime_path_list}" ":" _runtime_path_list)
+    endif()
 
-    ADD_CUSTOM_TARGET(launch-target-config ALL)
+    add_custom_target(launch-target-config ALL)
 
-    SET(_previous_target launch-target-config)
+    set(_previous_target launch-target-config)
 
-    FOREACH(_name _workingDir _executable _arguments 
+    foreach(_name _workingDir _executable _arguments 
         IN ZIP_LISTS 
             KIWI_LAUNCH_TARGET_NAME_LIST
             KIWI_LAUNCH_TARGET_WORKING_DIRECTORY_LIST
             KIWI_LAUNCH_TARGET_EXECUTABLE_LIST
             KIWI_LAUNCH_TARGET_ARGUMENTS_LIST)
 
-        STRING(MAKE_C_IDENTIFIER "${_name}" _id)
+        string(MAKE_C_IDENTIFIER "${_name}" _id)
 
         # Force CMake to not surround ${_arguments} in quotes
-        SEPARATE_ARGUMENTS(_argumentList NATIVE_COMMAND ${_arguments})
+        separate_arguments(_argumentList NATIVE_COMMAND ${_arguments})
 
-        ADD_CUSTOM_TARGET(
+        add_custom_target(
             launch-target-config-${_id}
             COMMENT "Adding Launch Target for '${_name}'"
             COMMAND ${Python3_EXECUTABLE}
@@ -84,9 +84,9 @@ FUNCTION(GENERATE_LAUNCH_TARGET_CONFIG)
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         )
 
-        ADD_DEPENDENCIES(${_previous_target} launch-target-config-${_id})
-        SET(_previous_target launch-target-config-${_id})
+        add_dependencies(${_previous_target} launch-target-config-${_id})
+        set(_previous_target launch-target-config-${_id})
 
-    ENDFOREACH()
+    endforeach()
 
-ENDFUNCTION()
+endfunction()

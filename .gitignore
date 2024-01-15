@@ -1,5 +1,8 @@
 .vs
 .vscode
+.cache
 [Bb]uild
 CMakeSettings.json
 *.log
+
+ROMs/*

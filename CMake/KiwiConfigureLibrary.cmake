@@ -16,15 +16,13 @@
 # * Build and add tests from Tests/*.cpp
 #
 
-INCLUDE(ConfigureFileList)
-
-MACRO(CONFIGURE_LIBRARY _target)
+macro(kiwi_configure_library _target)
 
     ###
     ### Source Files
     ###
 
-    FILE(
+    file(
         GLOB_RECURSE
         _source_list
         "Public/*.h"
@@ -35,27 +33,47 @@ MACRO(CONFIGURE_LIBRARY _target)
         "Private/*.cpp"
     )
 
-    FILE(
+    file(
         GLOB_RECURSE
         _source_input_list
         "Public/*.in"
         "Private/*.in"
     )
 
-    CONFIGURE_FILE_LIST("${_source_input_list}" _source_output_list)
+    foreach(_input IN LISTS _source_input_list)
+        # Replace leading source directory in path with binary directory
+        string(REPLACE 
+            ${CMAKE_CURRENT_SOURCE_DIR}
+            ${CMAKE_CURRENT_BINARY_DIR}
+            _output
+            ${_input}
+        )
+
+        # Remove the ".in"
+        string(REGEX
+            MATCH "^(.*)\\.[^.]*$"
+            _output
+            ${_output}
+        )
+        set(_output ${CMAKE_MATCH_1})
+
+        configure_file(${_input} ${_output})
+
+        list(APPEND _source_output_list ${_output})
+    endforeach()
 
     ###
     ### Target Configuration
     ###
 
-    TARGET_SOURCES(
+    target_sources(
         ${_target}
         PRIVATE
             ${_source_list}
             ${_source_output_list}
     )
 
-    TARGET_INCLUDE_DIRECTORIES(
+    target_include_directories(
         ${_target}
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public
@@ -65,7 +83,7 @@ MACRO(CONFIGURE_LIBRARY _target)
             ${CMAKE_CURRENT_BINARY_DIR}/Private
     )
 
-    TARGET_COMPILE_DEFINITIONS(
+    target_compile_definitions(
         ${_target}
         PUBLIC
             # Disable VS "not secure" warnings
@@ -74,7 +92,7 @@ MACRO(CONFIGURE_LIBRARY _target)
             $<$<BOOL:${KIWI_BENCHMARK}>:KIWI_ENABLE_BENCHMARK>
     )
 
-    TARGET_COMPILE_OPTIONS(
+    target_compile_options(
         ${_target}
         PUBLIC
             # Configure exception handling model
@@ -86,65 +104,58 @@ MACRO(CONFIGURE_LIBRARY _target)
             $<$<CXX_COMPILER_ID:MSVC>:  /wd4068>
     )
 
-    SET_TARGET_PROPERTIES(
-        ${_target}
-        PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
-    )
-
     ###
     ### Tests
     ###
 
-    IF(KIWI_TEST)
-        FILE(
+    if(KIWI_TEST)
+        file(
             GLOB
             _test_source_list
             "Tests/*.cpp"
         )
 
-        FOREACH(_test_source ${_test_source_list})
-            CMAKE_PATH(GET _test_source STEM _stem)
-            SET(_test_target "${_target}_${_stem}")
+        foreach(_test_source ${_test_source_list})
+            cmake_path(GET _test_source STEM _stem)
+            set(_test_target "${_target}_${_stem}")
 
-            ADD_EXECUTABLE(
+            add_executable(
                 ${_test_target}
                 ${_test_source}
             )
 
-            TARGET_LINK_LIBRARIES(
+            target_link_libraries(
                 ${_test_target}
                 PRIVATE
                     ${_target}
                     GTest::gtest
             )
 
-            ADD_TEST(
+            add_test(
                 NAME ${_test_target}
                 COMMAND $<TARGET_FILE:${_test_target}>
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Tests
             )
             
-            IF(WIN32)
-                STRING(REPLACE ";" "\\\\;" _env "PATH=${KIWI_RUNTIME_PATH_LIST};$ENV{PATH}")
-            ELSE()
-                STRING(REPLACE ";" ":" _env "LD_LIBRARY_PATH=${KIWI_RUNTIME_PATH_LIST}")
-            ENDIF()
+            if(WIN32)
+                string(REPLACE ";" "\\\\;" _env "PATH=${KIWI_RUNTIME_PATH_LIST};$ENV{PATH}")
+            else()
+                string(REPLACE ";" ":" _env "LD_LIBRARY_PATH=${KIWI_RUNTIME_PATH_LIST}")
+            endif()
 
-            SET_TESTS_PROPERTIES(
+            set_tests_properties(
                 ${_test_target}
                 PROPERTIES
                     ENVIRONMENT ${_env}
             )
 
-            ADD_LAUNCH_TARGET(
+            kiwi_add_launch_target(
                 "Kiwi Test ${_test_target}"
                 ${CMAKE_CURRENT_SOURCE_DIR}/Tests
                 $<TARGET_FILE:${_test_target}>
                 "--verbose"
             )
 
-        ENDFOREACH()
-    ENDIF()
-    
-ENDMACRO()
+        endforeach()
+    endif()
+endmacro()

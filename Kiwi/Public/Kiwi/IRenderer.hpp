@@ -2,11 +2,12 @@
 #define Kiwi_IRenderer_HPP
 
 #include <Kiwi/Config.hpp>
+#include <Kiwi/Utility/Log.hpp>
 
 KIWI_DISABLE_WARNINGS()
 
     #define VMA_STATS_STRING_ENABLED 0
-    #include <vk_mem_alloc.h>
+    #include <vma/vk_mem_alloc.h>
 
 KIWI_ENABLE_WARNINGS()
 
@@ -14,6 +15,11 @@ KIWI_ENABLE_WARNINGS()
 
 #include <QVulkanFunctions>
 #include <QVulkanDeviceFunctions>
+
+// TODO: Move
+inline auto format_as(VkResult vkResult) {
+    return fmt::underlying(vkResult);
+}
 
 namespace kiwi {
 

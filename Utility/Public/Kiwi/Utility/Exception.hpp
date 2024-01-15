@@ -21,7 +21,7 @@ public:
 
     template <class... Args>
     RuntimeError(StringView format, Args&&... args)
-        : std::runtime_error(fmt::vformat(format, fmt::make_format_args(std::forward<Args>(args)...)))
+        : std::runtime_error(fmt::vformat(format, fmt::make_format_args(args...)))
     { }
 
 }; // RuntimeError

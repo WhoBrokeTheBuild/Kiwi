@@ -1,33 +1,23 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.19 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.26 FATAL_ERROR)
 
 # Allow for custom CMake modules
-LIST(PREPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
+list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
 
-# Allow PROJECT() to manage versions
-IF(POLICY CMP0048)
-    CMAKE_POLICY(SET CMP0048 NEW)
-ENDIF()
+project(Kiwi)
 
-# Process DEPFILEs sent to Ninja
-IF(POLICY CMP0116)
-    CMAKE_POLICY(SET CMP0116 NEW)
-ENDIF()
-
-PROJECT(Kiwi)
-
-INCLUDE(ProjectVersion)
+include(KiwiProjectVersion)
 
 ###
 ### Options
 ###
 
-OPTION(KIWI_BENCHMARK
+option(KIWI_BENCHMARK
     "Build Kiwi with benchmarking"
     OFF
 )
 
 
-OPTION(KIWI_TEST
+option(KIWI_TEST
     "Build Kiwi test suite"
     OFF
 )
@@ -36,92 +26,146 @@ OPTION(KIWI_TEST
 ### Global Configuration
 ###
 
-IF(KIWI_TEST)
-    ENABLE_TESTING()
-ENDIF()
+if(KIWI_TEST)
+    enable_testing()
+endif()
 
-SET(CMAKE_CXX_STANDARD 20)
-SET(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(WIN32)
+    add_compile_definitions(
+        _CRT_SECURE_NO_WARNINGS
+    )
+endif()
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 ###
 ### Third Party Dependencies
 ###
 
-ADD_SUBDIRECTORY(ThirdParty)
+# TODO: Improve
+set(_saved_log_level ${CMAKE_MESSAGE_LOG_LEVEL})
+set(CMAKE_MESSAGE_LOG_LEVEL "WARNING")
 
-FIND_PACKAGE(glm CONFIG REQUIRED)
+include(FetchContent)
 
-FIND_PACKAGE(fmt 7.0.0 CONFIG REQUIRED)
+FetchContent_Declare(
+    cflags
+    GIT_REPOSITORY "https://github.com/WhoBrokeTheBuild/cflags.git"
+    GIT_TAG        "v3.0.3"
+    FIND_PACKAGE_ARGS
+)
 
-FIND_PACKAGE(nlohmann_json CONFIG REQUIRED)
+set(SDL_STATIC OFF)
+FetchContent_Declare(
+    SDL2
+    GIT_REPOSITORY "https://github.com/libsdl-org/SDL.git"
+    GIT_TAG        "release-2.28.5"
+    FIND_PACKAGE_ARGS
+)
 
-FIND_PACKAGE(cflags CONFIG REQUIRED)
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY "https://github.com/g-truc/glm.git"
+    GIT_TAG        "0.9.9.8"
+    FIND_PACKAGE_ARGS
+)
 
-FIND_PACKAGE(SDL2 2.0.6 CONFIG REQUIRED)
+FetchContent_Declare(
+    fmt
+    GIT_REPOSITORY "https://github.com/fmtlib/fmt.git"
+    GIT_TAG        "10.2.1"
+    FIND_PACKAGE_ARGS
+)
 
-FIND_PACKAGE(Qt6 COMPONENTS Widgets REQUIRED)
+FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY "https://github.com/nlohmann/json.git"
+    GIT_TAG        "v3.11.3"
+    FIND_PACKAGE_ARGS
+)
 
-FIND_PACKAGE(Vulkan COMPONENTS glslc REQUIRED)
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY "https://github.com/google/googletest.git"
+    GIT_TAG        "v1.14.0"
+    FIND_PACKAGE_ARGS NAMES GTest
+)
 
-FIND_PACKAGE(Python3 COMPONENTS Interpreter REQUIRED)
+FetchContent_MakeAvailable(cflags SDL2 glm fmt nlohmann_json googletest)
 
-SET(GTEST_MSVC_SEARCH "MD")
-FIND_PACKAGE(GTest REQUIRED)
+set(CMAKE_MESSAGE_LOG_LEVEL ${_saved_log_level})
+
+
+find_package(Qt6 COMPONENTS Widgets REQUIRED)
+
+find_package(Vulkan COMPONENTS glslc REQUIRED)
+
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
 ###
 ### Globals
 ###
 
-INCLUDE(GetRuntimeDir)
+include(GetRuntimeDir)
 
-GET_RUNTIME_DIR(SDL2::SDL2 _SDL2_runtime_dir)
+get_runtime_dir(SDL2::SDL2 _SDL2_runtime_dir)
 
-GET_RUNTIME_DIR(GTest::gtest _GTest_runtime_dir)
+get_runtime_dir(GTest::gtest _GTest_runtime_dir)
 
-SET(KIWI_RUNTIME_PATH_LIST
+get_runtime_dir(Qt6::Widgets _Qt_runtime_dir)
+
+set(KIWI_RUNTIME_PATH_LIST
     ${_SDL2_runtime_dir}
     ${_GTest_runtime_dir}
+    ${_Qt_runtime_dir}
     CACHE INTERNAL ""
 )
 
-SET(KIWI_SHADER_INCLUDE_PATH "" CACHE INTERNAL "")
+set(KIWI_SHADER_INCLUDE_PATH "" CACHE INTERNAL "")
+
+message(STATUS ${KIWI_RUNTIME_PATH_LIST})
 
 ###
 ### Targets
 ###
 
-INCLUDE(ConfigureLibrary)
-INCLUDE(AddLaunchTarget)
+include(KiwiConfigureLibrary)
+include(KiwiAddLaunchTarget)
 
-ADD_SUBDIRECTORY(Utility)
+add_subdirectory(Utility)
 
-ADD_SUBDIRECTORY(Kiwi)
+add_subdirectory(Kiwi)
 
-ADD_SUBDIRECTORY(Tools)
+add_subdirectory(Tools)
 
-ADD_SUBDIRECTORY(Processors)
+add_subdirectory(Processors)
 
-ADD_SUBDIRECTORY(Emulators)
+add_subdirectory(Emulators)
 
 ###
 ### Launch Targets
 ###
 
-ADD_LAUNCH_TARGET(
+kiwi_add_launch_target(
     "Kiwi"
-    ${CMAKE_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
     $<TARGET_FILE:KiwiGUI>
 )
 
-FOREACH(_emulator_target ${KIWI_EMULATOR_TARGET_LIST})
+foreach(_emulator_target ${KIWI_EMULATOR_TARGET_LIST})
 
-    ADD_LAUNCH_TARGET(
+    kiwi_add_launch_target(
         "Kiwi ${_emulator_target}"
-        ${CMAKE_BINARY_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}
         $<TARGET_FILE:KiwiGUI>
         --emulator $<TARGET_FILE:${_emulator_target}>
     )
 
-ENDFOREACH()
+endforeach()
 
-GENERATE_LAUNCH_TARGET_CONFIG()
+kiwi_generate_launch_target_config()

@@ -5,11 +5,11 @@ SET(_target KiwiUtility)
 ### Target Configuration
 ###
 
-ADD_LIBRARY(${_target} SHARED "")
+add_library(${_target} SHARED "")
 
-CONFIGURE_LIBRARY(${_target})
+kiwi_configure_library(${_target})
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     ${_target}
     PUBLIC
         glm::glm
@@ -18,7 +18,7 @@ TARGET_LINK_LIBRARIES(
         cflags::cppflags
 )
 
-SET_TARGET_PROPERTIES(
+set_target_properties(
     ${_target}
     PROPERTIES
         DEFINE_SYMBOL "KIWI_UTILITY_EXPORT"
